@@ -79,9 +79,9 @@ struct Event
   Int_t trigflag[NumOfSegTFlagElph];
 //  Double_t v792a[NumOfChV792];// for old CMAP (elph_20220908)
   Double_t E72BACa[NumOfSegE72BAC];
-  Double_t E72BACt[NumOfSegE72BAC][MaxDepth];  
+  Double_t E72BACt[NumOfSegE72BAC][MaxDepth];
   Double_t E72BACSUMa[NumOfSegE72BACSUM];
-  Double_t E72BACSUMt[NumOfSegE72BACSUM][MaxDepth];  
+  Double_t E72BACSUMt[NumOfSegE72BACSUM][MaxDepth];
   Double_t KVCa[NumOfSegKVC];
   Double_t KVCt[NumOfSegKVC][MaxDepth];
   Double_t KVCSUMa[NumOfSegKVCSUM];
@@ -107,7 +107,7 @@ void
 Event::clear()
 {
   evnum      = 0;
- /* 
+ /*
   bacnhits   = 0;
 
   for(Int_t it=0; it<NumOfSegTrig; ++it){
@@ -157,13 +157,13 @@ Event::clear()
   }
   for(Int_t it=0; it<NumOfSegT5; it++){
     T5a[it] = qnan;
-  } 
+  }
   for(Int_t it=0; it<NumOfSegT6; it++){
     T6a[it] = qnan;
-  } 
+  }
   for(Int_t it=0; it<NumOfSegT7; it++){
     T7a[it] = qnan;
-  } 
+  }
 
   for(Int_t it=0; it<NumOfSegE72BAC; it++){
     for(Int_t m=0; m<MaxDepth; ++m){
@@ -174,7 +174,7 @@ Event::clear()
     for(Int_t m=0; m<MaxDepth; ++m){
       E72BACSUMt[it][m]  = qnan;
     }
-  
+
   }
   for(Int_t it=0; it<NumOfSegKVC; it++){
     for(Int_t m=0; m<MaxDepth; ++m){
@@ -276,7 +276,6 @@ UserElph::ProcessingNormal()
   //   }
   // }
 
-  const Int_t NumOfSegTFlagElph = 5;
   std::bitset<NumOfSegTFlagElph> trigger_flag;
   for(const auto& hit: rawData->GetTrigRawHC()){
     Int_t seg = hit->SegmentId();
@@ -284,6 +283,7 @@ UserElph::ProcessingNormal()
     if(tdc > 0){
       event.trigpat[trigger_flag.count()] = seg;
       event.trigflag[seg] = tdc;
+      trigger_flag.set(seg);
     }
   }
 
@@ -293,7 +293,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetE72BACRawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -315,7 +315,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetE72BACSUMRawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -335,7 +335,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetKVCRawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -357,7 +357,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetKVCSUMRawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -377,7 +377,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetE90SACRawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -399,7 +399,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetE90SACSUMRawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -419,7 +419,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetT4RawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -440,7 +440,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetT5RawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -461,7 +461,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetT6RawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -482,7 +482,7 @@ UserElph::ProcessingNormal()
     const HodoRHitContainer& cont = rawData->GetT7RawHC();
     Int_t nh = cont.size();
     // HF1(V792Hid, nh);
-    Int_t nh1 = 0, nh2 = 0;
+    // Int_t nh1 = 0, nh2 = 0;
     for(Int_t i=0; i<nh; ++i){
       HodoRawHit *hit = cont[i];
       Int_t seg = hit->SegmentId()+1;
@@ -496,8 +496,8 @@ UserElph::ProcessingNormal()
       }
     }
   }
-  
-  
+
+
   return true;
 }
 
