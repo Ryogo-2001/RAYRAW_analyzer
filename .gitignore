@@ -29,5 +29,5 @@ param/KURAMA
 src/back
 include/back
 usr/back
-tmp
+tmp*
 tools*
