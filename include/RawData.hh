@@ -50,6 +50,15 @@ private:
   HodoRHitContainer              m_ScalerRawHC;
   HodoRHitContainer              m_TrigRawHC;
   HodoRHitContainer              m_VmeCalibRawHC;
+  // Parasite _______________________________________
+  HodoRHitContainer              m_T1RawHC;
+  HodoRHitContainer              m_T2RawHC;
+  HodoRHitContainer              m_E72BACRawHC;
+  HodoRHitContainer              m_E90SACRawHC;
+  HodoRHitContainer              m_E72KVCRawHC;
+  HodoRHitContainer              m_E72KVCSUMRawHC;
+  HodoRHitContainer              m_E42BH2RawHC;
+  HodoRHitContainer              m_E42BH2MTRawHC;
 
 public:
   void                     ClearAll();
@@ -73,6 +82,15 @@ public:
   const HodoRHitContainer& GetScalerRawHC() const;
   const HodoRHitContainer& GetTrigRawHC() const;
   const HodoRHitContainer& GetVmeCalibRawHC() const;
+  // Parasite _______________________________________
+  const HodoRHitContainer& GetT1RawHC() const;
+  const HodoRHitContainer& GetT2RawHC() const;
+  const HodoRHitContainer& GetE72BACRawHC() const;
+  const HodoRHitContainer& GetE90SACRawHC() const;
+  const HodoRHitContainer& GetE72KVCRawHC() const;
+  const HodoRHitContainer& GetE72KVCSUMRawHC() const;
+  const HodoRHitContainer& GetE42BH2RawHC() const;
+  const HodoRHitContainer& GetE42BH2MTRawHC() const;
 
 private:
   enum EDCDataType { kDcLeading, kDcTrailing, kDcOverflow, kDcNDataType };
@@ -225,6 +243,62 @@ inline const HodoRHitContainer&
 RawData::GetVmeCalibRawHC() const
 {
   return m_VmeCalibRawHC;
+}
+// Parasite _______________________________________
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetT1RawHC() const
+{
+  return m_T1RawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetT2RawHC() const
+{
+  return m_T2RawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetE72BACRawHC() const
+{
+  return m_E72BACRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetE90SACRawHC() const
+{
+  return m_E90SACRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetE72KVCRawHC() const
+{
+  return m_E72KVCRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetE72KVCSUMRawHC() const
+{
+  return m_E72KVCSUMRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetE42BH2RawHC() const
+{
+  return m_E42BH2RawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetE42BH2MTRawHC() const
+{
+  return m_E42BH2MTRawHC;
 }
 
 #endif

@@ -103,6 +103,15 @@ RawData::ClearAll()
   del::ClearContainer(m_ScalerRawHC);
   del::ClearContainer(m_TrigRawHC);
   del::ClearContainer(m_VmeCalibRawHC);
+  // Parasite ______________________________________________
+  del::ClearContainer(m_T1RawHC);
+  del::ClearContainer(m_T2RawHC);
+  del::ClearContainer(m_E72BACRawHC);
+  del::ClearContainer(m_E90SACRawHC);
+  del::ClearContainer(m_E72KVCRawHC);
+  del::ClearContainer(m_E72KVCSUMRawHC);
+  del::ClearContainer(m_E42BH2RawHC);
+  del::ClearContainer(m_E42BH2MTRawHC);
 }
 
 //_____________________________________________________________________________
@@ -351,6 +360,40 @@ RawData::DecodeHits()
 
   // Trigger Flag
   DecodeHodo(DetIdTrig, NumOfSegTrig, kOneSide, m_TrigRawHC);
+  
+//  // Parasite ===========================================================
+  // T1
+  DecodeHodo(DetIdT1, NumOfSegT1, kOneSide,  m_T1RawHC);
+  // T2
+  DecodeHodo(DetIdT2, NumOfSegT2, kOneSide,  m_T2RawHC);
+  // BAC
+  DecodeHodo(DetIdE72BAC, NumOfSegE72BAC, kOneSide,  m_E72BACRawHC);
+  // SAC
+  DecodeHodo(DetIdE90SAC, NumOfSegE90SAC, kOneSide,  m_E90SACRawHC);
+  // KVC
+  DecodeHodo(DetIdE72KVC, NumOfSegE72KVC, kBothSide, m_E72KVCRawHC);
+  // BH2
+  DecodeHodo(DetIdE42BH2, NumOfSegE42BH2, kBothSide, m_E42BH2RawHC);
+  // KVCSUM
+  for(Int_t seg=0; seg<NumOfSegE72KVC; ++seg){
+    for(Int_t AorT=0; AorT<2; ++AorT){
+      for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdE72KVC, 0, seg, 2, AorT);
+	  m<nhit; ++m){
+	UInt_t data = gUnpacker.get(DetIdE72KVC, 0, seg, 2, AorT, m);
+	AddHodoRawHit(m_E72KVCSUMRawHC, DetIdE72KVC, 0, seg, 0, AorT, data);
+      }
+    }
+  }
+  // BH2MT
+  for(Int_t seg=0; seg<NumOfSegE42BH2; ++seg){
+    for(Int_t AorT=0; AorT<2; ++AorT){
+      for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdE42BH2, 0, seg, 2, AorT);
+	  m<nhit; ++m){
+	UInt_t data = gUnpacker.get(DetIdE42BH2, 0, seg, 2, AorT, m);
+	AddHodoRawHit(m_E42BH2MTRawHC, DetIdE42BH2, 0, seg, 0, AorT, data);
+      }
+    }
+  }
 
   m_is_decoded[kOthers] = true;
   return true;

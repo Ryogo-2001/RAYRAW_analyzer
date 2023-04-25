@@ -28,6 +28,19 @@ const Int_t NumOfSegHTOF  = 34;
 const Int_t NumOfSegBVH   =  4;
 const Int_t NumOfSegLAC   = 30;
 const Int_t NumOfSegWC    = 20;
+// Parasite ___________________________________________________________
+const Int_t DetIdE72BAC      =  501;
+const Int_t DetIdE90SAC      =  502;
+const Int_t DetIdE72KVC      =  503;
+const Int_t DetIdE42BH2      =  504;
+const Int_t DetIdT1          =  505;
+const Int_t DetIdT2          =  506;
+const Int_t NumOfSegE72BAC   =  1;
+const Int_t NumOfSegE90SAC   =  2;
+const Int_t NumOfSegE72KVC   =  4;
+const Int_t NumOfSegE42BH2   =  8;
+const Int_t NumOfSegT1       =  1;
+const Int_t NumOfSegT2       =  1;
 
 // Misc _______________________________________________________________
 const Int_t DetIdTrig       = 21;
