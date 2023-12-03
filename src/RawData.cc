@@ -112,241 +112,252 @@ RawData::ClearAll()
   del::ClearContainer(m_E72KVCSUMRawHC);
   del::ClearContainer(m_E42BH2RawHC);
   del::ClearContainer(m_E42BH2MTRawHC);
+  // KEKAR2023Dec ______________________________________________
+  del::ClearContainer(m_KEKART1RawHC);
+  del::ClearContainer(m_KEKART2RawHC);
+  del::ClearContainer(m_KEKART3RawHC);
+  del::ClearContainer(m_KEKART4RawHC);
+  del::ClearContainer(m_KEKARE90SACRawHC);
+  del::ClearContainer(m_KEKARE90SACSUMRawHC);
+  del::ClearContainer(m_KEKARE72BACRawHC);
+  del::ClearContainer(m_KEKARE72BACSUMRawHC);
+  del::ClearContainer(m_KEKARE72KVCRawHC);
+  del::ClearContainer(m_KEKARE72KVCSUMRawHC);
 }
 
 //_____________________________________________________________________________
 Bool_t
 RawData::DecodeHits()
 {
-  static const Double_t MinTdcBC3  = gUser.GetParameter("TdcBC3", 0);
-  static const Double_t MaxTdcBC3  = gUser.GetParameter("TdcBC3", 1);
-  static const Double_t MinTdcBC4  = gUser.GetParameter("TdcBC4", 0);
-  static const Double_t MaxTdcBC4  = gUser.GetParameter("TdcBC4", 1);
-  static const Double_t MinTdcSDC1 = gUser.GetParameter("TdcSDC1", 0);
-  static const Double_t MaxTdcSDC1 = gUser.GetParameter("TdcSDC1", 1);
-  static const Double_t MinTdcSDC2 = gUser.GetParameter("TdcSDC2", 0);
-  static const Double_t MaxTdcSDC2 = gUser.GetParameter("TdcSDC2", 1);
-  static const Double_t MinTdcSDC3 = gUser.GetParameter("TdcSDC3", 0);
-  static const Double_t MaxTdcSDC3 = gUser.GetParameter("TdcSDC3", 1);
-  static const Double_t MinTdcSDC4 = gUser.GetParameter("TdcSDC4", 0);
-  static const Double_t MaxTdcSDC4 = gUser.GetParameter("TdcSDC4", 1);
-  static const Double_t MinTdcSDC5 = gUser.GetParameter("TdcSDC5", 0);
-  static const Double_t MaxTdcSDC5 = gUser.GetParameter("TdcSDC5", 1);
-  static const Double_t MinTrailingSDC1 = gUser.GetParameter("TrailingSDC1", 0);
-  static const Double_t MaxTrailingSDC1 = gUser.GetParameter("TrailingSDC1", 1);
-  static const Double_t MinTrailingSDC2 = gUser.GetParameter("TrailingSDC2", 0);
-  static const Double_t MaxTrailingSDC2 = gUser.GetParameter("TrailingSDC2", 1);
-  static const Double_t MinTrailingSDC3 = gUser.GetParameter("TrailingSDC3", 0);
-  static const Double_t MaxTrailingSDC3 = gUser.GetParameter("TrailingSDC3", 1);
-  static const Double_t MinTrailingSDC4 = gUser.GetParameter("TrailingSDC4", 0);
-  static const Double_t MaxTrailingSDC4 = gUser.GetParameter("TrailingSDC4", 1);
-  static const Double_t MinTrailingSDC5 = gUser.GetParameter("TrailingSDC5", 0);
-  static const Double_t MaxTrailingSDC5 = gUser.GetParameter("TrailingSDC5", 1);
+//   static const Double_t MinTdcBC3  = gUser.GetParameter("TdcBC3", 0);
+//   static const Double_t MaxTdcBC3  = gUser.GetParameter("TdcBC3", 1);
+//   static const Double_t MinTdcBC4  = gUser.GetParameter("TdcBC4", 0);
+//   static const Double_t MaxTdcBC4  = gUser.GetParameter("TdcBC4", 1);
+//   static const Double_t MinTdcSDC1 = gUser.GetParameter("TdcSDC1", 0);
+//   static const Double_t MaxTdcSDC1 = gUser.GetParameter("TdcSDC1", 1);
+//   static const Double_t MinTdcSDC2 = gUser.GetParameter("TdcSDC2", 0);
+//   static const Double_t MaxTdcSDC2 = gUser.GetParameter("TdcSDC2", 1);
+//   static const Double_t MinTdcSDC3 = gUser.GetParameter("TdcSDC3", 0);
+//   static const Double_t MaxTdcSDC3 = gUser.GetParameter("TdcSDC3", 1);
+//   static const Double_t MinTdcSDC4 = gUser.GetParameter("TdcSDC4", 0);
+//   static const Double_t MaxTdcSDC4 = gUser.GetParameter("TdcSDC4", 1);
+//   static const Double_t MinTdcSDC5 = gUser.GetParameter("TdcSDC5", 0);
+//   static const Double_t MaxTdcSDC5 = gUser.GetParameter("TdcSDC5", 1);
+//   static const Double_t MinTrailingSDC1 = gUser.GetParameter("TrailingSDC1", 0);
+//   static const Double_t MaxTrailingSDC1 = gUser.GetParameter("TrailingSDC1", 1);
+//   static const Double_t MinTrailingSDC2 = gUser.GetParameter("TrailingSDC2", 0);
+//   static const Double_t MaxTrailingSDC2 = gUser.GetParameter("TrailingSDC2", 1);
+//   static const Double_t MinTrailingSDC3 = gUser.GetParameter("TrailingSDC3", 0);
+//   static const Double_t MaxTrailingSDC3 = gUser.GetParameter("TrailingSDC3", 1);
+//   static const Double_t MinTrailingSDC4 = gUser.GetParameter("TrailingSDC4", 0);
+//   static const Double_t MaxTrailingSDC4 = gUser.GetParameter("TrailingSDC4", 1);
+//   static const Double_t MinTrailingSDC5 = gUser.GetParameter("TrailingSDC5", 0);
+//   static const Double_t MaxTrailingSDC5 = gUser.GetParameter("TrailingSDC5", 1);
 
-  if(m_is_decoded[kOthers]){
-    hddaq::cout << "#D " << FUNC_NAME << " "
-		<< "already decoded!" << std::endl;
-    return false;
-  }
+//   if(m_is_decoded[kOthers]){
+//     hddaq::cout << "#D " << FUNC_NAME << " "
+// 		<< "already decoded!" << std::endl;
+//     return false;
+//   }
 
-  ClearAll();
+//   ClearAll();
 
-  // BH1
-  DecodeHodo(DetIdBH1, NumOfSegBH1, kBothSide, m_BH1RawHC);
-  // BH2
-  DecodeHodo(DetIdBH2, NumOfSegBH2, kBothSide, m_BH2RawHC);
-  // BAC
-  DecodeHodo(DetIdBAC, NumOfSegBAC, kOneSide,  m_BACRawHC);
-  // HTOF
-  DecodeHodo(DetIdHTOF, NumOfSegHTOF, kBothSide, m_HTOFRawHC);
-  // SCH
-  for(Int_t seg=0; seg<NumOfSegSCH; ++seg){
-    UInt_t nhit = gUnpacker.get_entries(DetIdSCH, 0, seg, 0, 0);
-    for(Int_t i=0; i<nhit; ++i){
-      UInt_t leading  = gUnpacker.get(DetIdSCH, 0, seg, 0, 0, i);
-      UInt_t trailing = gUnpacker.get(DetIdSCH, 0, seg, 0, 1, i);
-      AddHodoRawHit(m_SCHRawHC, DetIdSCH, 0, seg, 0,
-		    kHodoLeading,  leading);
-      AddHodoRawHit(m_SCHRawHC, DetIdSCH, 0, seg, 0,
-		    kHodoTrailing, trailing);
-    }
-  }
-  // BVH
-  DecodeHodo(DetIdBVH, NumOfSegBVH, kOneSide,  m_BVHRawHC);
-  // TOF
-  DecodeHodo(DetIdTOF, NumOfSegTOF, kBothSide, m_TOFRawHC);
-  // LAC
-  DecodeHodo(DetIdLAC, NumOfSegLAC, kOneSide, m_LACRawHC);
-  // WC
-  DecodeHodo(DetIdWC, NumOfSegWC, kBothSide, m_WCRawHC);
-  // WC SUM
-  for(Int_t seg=0; seg<NumOfSegWC; ++seg){
-    for(Int_t AorT=0; AorT<2; ++AorT){
-      for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdWC, 0, seg, 2, AorT);
-	  m<nhit; ++m){
-	UInt_t data = gUnpacker.get(DetIdWC, 0, seg, 2, AorT, m);
-	AddHodoRawHit(m_WCSUMRawHC, DetIdWCSUM, 0, seg, 0, AorT, data);
-      }
-    }
-  }
+//   // BH1
+//   DecodeHodo(DetIdBH1, NumOfSegBH1, kBothSide, m_BH1RawHC);
+//   // BH2
+//   DecodeHodo(DetIdBH2, NumOfSegBH2, kBothSide, m_BH2RawHC);
+//   // BAC
+//   DecodeHodo(DetIdBAC, NumOfSegBAC, kOneSide,  m_BACRawHC);
+//   // HTOF
+//   DecodeHodo(DetIdHTOF, NumOfSegHTOF, kBothSide, m_HTOFRawHC);
+//   // SCH
+//   for(Int_t seg=0; seg<NumOfSegSCH; ++seg){
+//     UInt_t nhit = gUnpacker.get_entries(DetIdSCH, 0, seg, 0, 0);
+//     for(Int_t i=0; i<nhit; ++i){
+//       UInt_t leading  = gUnpacker.get(DetIdSCH, 0, seg, 0, 0, i);
+//       UInt_t trailing = gUnpacker.get(DetIdSCH, 0, seg, 0, 1, i);
+//       AddHodoRawHit(m_SCHRawHC, DetIdSCH, 0, seg, 0,
+// 		    kHodoLeading,  leading);
+//       AddHodoRawHit(m_SCHRawHC, DetIdSCH, 0, seg, 0,
+// 		    kHodoTrailing, trailing);
+//     }
+//   }
+//   // BVH
+//   DecodeHodo(DetIdBVH, NumOfSegBVH, kOneSide,  m_BVHRawHC);
+//   // TOF
+//   DecodeHodo(DetIdTOF, NumOfSegTOF, kBothSide, m_TOFRawHC);
+//   // LAC
+//   DecodeHodo(DetIdLAC, NumOfSegLAC, kOneSide, m_LACRawHC);
+//   // WC
+//   DecodeHodo(DetIdWC, NumOfSegWC, kBothSide, m_WCRawHC);
+//   // WC SUM
+//   for(Int_t seg=0; seg<NumOfSegWC; ++seg){
+//     for(Int_t AorT=0; AorT<2; ++AorT){
+//       for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdWC, 0, seg, 2, AorT);
+// 	  m<nhit; ++m){
+// 	UInt_t data = gUnpacker.get(DetIdWC, 0, seg, 2, AorT, m);
+// 	AddHodoRawHit(m_WCSUMRawHC, DetIdWCSUM, 0, seg, 0, AorT, data);
+//       }
+//     }
+//   }
 
-  //BFT
-  for(Int_t plane=0; plane<NumOfPlaneBFT; ++plane){
-    for(Int_t seg=0; seg<NumOfSegBFT; ++seg){
-      UInt_t nhit = gUnpacker.get_entries(DetIdBFT, plane, 0, seg, 0);
-      for(Int_t i=0; i<nhit; ++i){
-	UInt_t leading  = gUnpacker.get(DetIdBFT, plane, 0, seg, 0, i);
-	UInt_t trailing = gUnpacker.get(DetIdBFT, plane, 0, seg, 1, i);
-	AddHodoRawHit(m_BFTRawHC[plane], DetIdBFT, plane, seg, 0,
-		      kHodoLeading,  leading);
-	AddHodoRawHit(m_BFTRawHC[plane], DetIdBFT, plane, seg, 0,
-		      kHodoTrailing, trailing);
-      }
-    }
-  }
+//   //BFT
+//   for(Int_t plane=0; plane<NumOfPlaneBFT; ++plane){
+//     for(Int_t seg=0; seg<NumOfSegBFT; ++seg){
+//       UInt_t nhit = gUnpacker.get_entries(DetIdBFT, plane, 0, seg, 0);
+//       for(Int_t i=0; i<nhit; ++i){
+// 	UInt_t leading  = gUnpacker.get(DetIdBFT, plane, 0, seg, 0, i);
+// 	UInt_t trailing = gUnpacker.get(DetIdBFT, plane, 0, seg, 1, i);
+// 	AddHodoRawHit(m_BFTRawHC[plane], DetIdBFT, plane, seg, 0,
+// 		      kHodoLeading,  leading);
+// 	AddHodoRawHit(m_BFTRawHC[plane], DetIdBFT, plane, seg, 0,
+// 		      kHodoTrailing, trailing);
+//       }
+//     }
+//   }
 
-  // BC3&BC4 MWDC
-  for(Int_t plane=0; plane<NumOfLayersBcOut; ++plane){
-    if(plane<NumOfLayersBc){
-      for(Int_t wire=0; wire<MaxWireBC3; ++wire){
-	for(Int_t lt=0; lt<2; ++lt){
-	  UInt_t nhit = gUnpacker.get_entries(DetIdBC3, plane, 0, wire, lt);
-#if OscillationCut
-	  if(nhit>MaxMultiHitDC) continue;
-#endif
-	  for(Int_t i=0; i<nhit; i++){
-	    UInt_t data = gUnpacker.get(DetIdBC3, plane, 0, wire, lt, i);
-	    if (lt == 0 && (data<MinTdcBC3 || MaxTdcBC3<data)) continue;
-	    if (lt == 1 && data<MinTdcBC3) continue;
-	    AddDCRawHit(m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1,
-			data, lt);
-	  }
-	}
-      }
-    } else {
-#if 0
-      // BC3 U-U' is dead E42
-      if(gUnpacker.get_run_number() >= 5361
-	 && (plane == NumOfLayersBc || plane == NumOfLayersBc+1)){
-	continue;
-      }
-#endif
-      for(Int_t wire=0; wire<MaxWireBC4; ++wire){
-	for(Int_t lt=0; lt<2; ++lt){
-	  UInt_t nhit = gUnpacker.get_entries(DetIdBC4, plane-NumOfLayersBc,
-					      0, wire, lt);
-#if OscillationCut
-	  if(nhit>MaxMultiHitDC) continue;
-#endif
-	  for(Int_t i=0; i<nhit; i++){
-	    UInt_t data =  gUnpacker.get(DetIdBC4, plane-NumOfLayersBc, 0,
-					 wire, lt, i);
-	    if (lt == 0 && (data<MinTdcBC4 || MaxTdcBC4<data)) continue;
-	    if (lt == 1 && data<MinTdcBC4) continue;
-	    AddDCRawHit(m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1,
-			data, lt);
-	  }
-	}
-      }
-    }
-  }
+//   // BC3&BC4 MWDC
+//   for(Int_t plane=0; plane<NumOfLayersBcOut; ++plane){
+//     if(plane<NumOfLayersBc){
+//       for(Int_t wire=0; wire<MaxWireBC3; ++wire){
+// 	for(Int_t lt=0; lt<2; ++lt){
+// 	  UInt_t nhit = gUnpacker.get_entries(DetIdBC3, plane, 0, wire, lt);
+// #if OscillationCut
+// 	  if(nhit>MaxMultiHitDC) continue;
+// #endif
+// 	  for(Int_t i=0; i<nhit; i++){
+// 	    UInt_t data = gUnpacker.get(DetIdBC3, plane, 0, wire, lt, i);
+// 	    if (lt == 0 && (data<MinTdcBC3 || MaxTdcBC3<data)) continue;
+// 	    if (lt == 1 && data<MinTdcBC3) continue;
+// 	    AddDCRawHit(m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1,
+// 			data, lt);
+// 	  }
+// 	}
+//       }
+//     } else {
+// #if 0
+//       // BC3 U-U' is dead E42
+//       if(gUnpacker.get_run_number() >= 5361
+// 	 && (plane == NumOfLayersBc || plane == NumOfLayersBc+1)){
+// 	continue;
+//       }
+// #endif
+//       for(Int_t wire=0; wire<MaxWireBC4; ++wire){
+// 	for(Int_t lt=0; lt<2; ++lt){
+// 	  UInt_t nhit = gUnpacker.get_entries(DetIdBC4, plane-NumOfLayersBc,
+// 					      0, wire, lt);
+// #if OscillationCut
+// 	  if(nhit>MaxMultiHitDC) continue;
+// #endif
+// 	  for(Int_t i=0; i<nhit; i++){
+// 	    UInt_t data =  gUnpacker.get(DetIdBC4, plane-NumOfLayersBc, 0,
+// 					 wire, lt, i);
+// 	    if (lt == 0 && (data<MinTdcBC4 || MaxTdcBC4<data)) continue;
+// 	    if (lt == 1 && data<MinTdcBC4) continue;
+// 	    AddDCRawHit(m_BcOutRawHC[plane+1], plane+PlMinBcOut, wire+1,
+// 			data, lt);
+// 	  }
+// 	}
+//       }
+//     }
+//   }
 
-  // SDC1
-  for(Int_t plane=0; plane<NumOfLayersSDC1; ++plane){
-    for(Int_t wire=0; wire<MaxWireSDC1; ++wire){
-      for(Int_t lt=0; lt<2; ++lt){
-	UInt_t nhit = gUnpacker.get_entries(DetIdSDC1, plane, 0, wire, lt);
-#if OscillationCut
-	if(nhit > MaxMultiHitDC) continue;
-#endif
-	for(Int_t i=0; i<nhit; ++i){
-	  UInt_t data = gUnpacker.get(DetIdSDC1, plane, 0, wire, lt, i);
-	  if(lt == 0 && (data < MinTdcSDC1 || MaxTdcSDC1 < data)) continue;
-	  if(lt == 1 && (data < MinTrailingSDC1 || MaxTrailingSDC1 < data)) continue;
-	  AddDCRawHit(m_SdcInRawHC[plane+1], plane+PlMinSdcIn, wire+1, data , lt);
-	}
-      }
-    }
-  }
-  // SDC2
-  for(Int_t plane=0; plane<NumOfLayersSDC2; ++plane){
-    const Int_t MaxWireSDC2 = (plane < 2) ? MaxWireSDC2X : MaxWireSDC2Y;
-    for(Int_t wire=0; wire<MaxWireSDC2; ++wire){
-      for(Int_t lt=0; lt<2; ++lt){
-	UInt_t nhit = gUnpacker.get_entries(DetIdSDC2, plane, 0, wire, lt);
-#if OscillationCut
-	if(nhit > MaxMultiHitDC) continue;
-#endif
-	for(Int_t i=0; i<nhit; ++i){
-	  UInt_t data = gUnpacker.get(DetIdSDC2, plane, 0, wire, lt, i);
-	  if(lt == 0 && (data < MinTdcSDC2 || MaxTdcSDC2 < data)) continue;
-	  if(lt == 1 && (data < MinTrailingSDC2 || MaxTrailingSDC2 < data)) continue;
-	  AddDCRawHit(m_SdcInRawHC[plane+NumOfLayersSDC1+1],
-		      plane+NumOfLayersSDC1+PlMinSdcIn, wire+1, data , lt);
-	}
-      }
-    }
-  }
+//   // SDC1
+//   for(Int_t plane=0; plane<NumOfLayersSDC1; ++plane){
+//     for(Int_t wire=0; wire<MaxWireSDC1; ++wire){
+//       for(Int_t lt=0; lt<2; ++lt){
+// 	UInt_t nhit = gUnpacker.get_entries(DetIdSDC1, plane, 0, wire, lt);
+// #if OscillationCut
+// 	if(nhit > MaxMultiHitDC) continue;
+// #endif
+// 	for(Int_t i=0; i<nhit; ++i){
+// 	  UInt_t data = gUnpacker.get(DetIdSDC1, plane, 0, wire, lt, i);
+// 	  if(lt == 0 && (data < MinTdcSDC1 || MaxTdcSDC1 < data)) continue;
+// 	  if(lt == 1 && (data < MinTrailingSDC1 || MaxTrailingSDC1 < data)) continue;
+// 	  AddDCRawHit(m_SdcInRawHC[plane+1], plane+PlMinSdcIn, wire+1, data , lt);
+// 	}
+//       }
+//     }
+//   }
+//   // SDC2
+//   for(Int_t plane=0; plane<NumOfLayersSDC2; ++plane){
+//     const Int_t MaxWireSDC2 = (plane < 2) ? MaxWireSDC2X : MaxWireSDC2Y;
+//     for(Int_t wire=0; wire<MaxWireSDC2; ++wire){
+//       for(Int_t lt=0; lt<2; ++lt){
+// 	UInt_t nhit = gUnpacker.get_entries(DetIdSDC2, plane, 0, wire, lt);
+// #if OscillationCut
+// 	if(nhit > MaxMultiHitDC) continue;
+// #endif
+// 	for(Int_t i=0; i<nhit; ++i){
+// 	  UInt_t data = gUnpacker.get(DetIdSDC2, plane, 0, wire, lt, i);
+// 	  if(lt == 0 && (data < MinTdcSDC2 || MaxTdcSDC2 < data)) continue;
+// 	  if(lt == 1 && (data < MinTrailingSDC2 || MaxTrailingSDC2 < data)) continue;
+// 	  AddDCRawHit(m_SdcInRawHC[plane+NumOfLayersSDC1+1],
+// 		      plane+NumOfLayersSDC1+PlMinSdcIn, wire+1, data , lt);
+// 	}
+//       }
+//     }
+//   }
 
-  // SDC3
-  for(Int_t plane=0; plane<NumOfLayersSDC3; ++plane){
-    for(Int_t wire=0; wire<MaxWireSDC3; ++wire){
-      for(Int_t lt=0; lt<2; ++lt){
-	auto nhit = gUnpacker.get_entries(DetIdSDC3, plane, 0, wire, lt);
-#if OscillationCut
-	if(nhit > MaxMultiHitDC) continue;
-#endif
-	for(Int_t i=0; i<nhit; ++i){
-	  auto data = gUnpacker.get(DetIdSDC3, plane, 0, wire, lt, i);
-	  if(lt == 0 && (data < MinTdcSDC3 || MaxTdcSDC3 < data)) continue;
-	  if(lt == 1 && (data < MinTrailingSDC3 || MaxTrailingSDC3 < data)) continue;
-	  AddDCRawHit(m_SdcOutRawHC[plane+1], plane+PlMinSdcOut, wire+1,
-		      data , lt);
-	}
-      }
-    }
-  }
+//   // SDC3
+//   for(Int_t plane=0; plane<NumOfLayersSDC3; ++plane){
+//     for(Int_t wire=0; wire<MaxWireSDC3; ++wire){
+//       for(Int_t lt=0; lt<2; ++lt){
+// 	auto nhit = gUnpacker.get_entries(DetIdSDC3, plane, 0, wire, lt);
+// #if OscillationCut
+// 	if(nhit > MaxMultiHitDC) continue;
+// #endif
+// 	for(Int_t i=0; i<nhit; ++i){
+// 	  auto data = gUnpacker.get(DetIdSDC3, plane, 0, wire, lt, i);
+// 	  if(lt == 0 && (data < MinTdcSDC3 || MaxTdcSDC3 < data)) continue;
+// 	  if(lt == 1 && (data < MinTrailingSDC3 || MaxTrailingSDC3 < data)) continue;
+// 	  AddDCRawHit(m_SdcOutRawHC[plane+1], plane+PlMinSdcOut, wire+1,
+// 		      data , lt);
+// 	}
+//       }
+//     }
+//   }
 
-  // SDC4
-  for(Int_t plane=0; plane<NumOfLayersSDC4; ++plane){
-    const Int_t MaxWireSDC4 = (plane < 2) ? MaxWireSDC4Y : MaxWireSDC4X;
-    for(Int_t wire=0; wire<MaxWireSDC4; ++wire){
-      for(Int_t lt=0; lt<2; ++lt){
-	auto nhit = gUnpacker.get_entries(DetIdSDC4, plane, 0, wire, lt);
-#if OscillationCut
-	if(nhit > MaxMultiHitDC) continue;
-#endif
-	for(Int_t i=0; i<nhit; ++i){
-	  auto data = gUnpacker.get(DetIdSDC4, plane, 0, wire, lt, i);
-	  if(lt == 0 && (data < MinTdcSDC4 || MaxTdcSDC4 < data)) continue;
-	  if(lt == 1 && (data < MinTrailingSDC4 || MaxTrailingSDC4 < data)) continue;
-	  AddDCRawHit(m_SdcOutRawHC[plane+NumOfLayersSDC3+1],
-		      plane+NumOfLayersSDC3+PlMinSdcOut, wire+1, data , lt);
-	}
-      }
-    }
-  }
+//   // SDC4
+//   for(Int_t plane=0; plane<NumOfLayersSDC4; ++plane){
+//     const Int_t MaxWireSDC4 = (plane < 2) ? MaxWireSDC4Y : MaxWireSDC4X;
+//     for(Int_t wire=0; wire<MaxWireSDC4; ++wire){
+//       for(Int_t lt=0; lt<2; ++lt){
+// 	auto nhit = gUnpacker.get_entries(DetIdSDC4, plane, 0, wire, lt);
+// #if OscillationCut
+// 	if(nhit > MaxMultiHitDC) continue;
+// #endif
+// 	for(Int_t i=0; i<nhit; ++i){
+// 	  auto data = gUnpacker.get(DetIdSDC4, plane, 0, wire, lt, i);
+// 	  if(lt == 0 && (data < MinTdcSDC4 || MaxTdcSDC4 < data)) continue;
+// 	  if(lt == 1 && (data < MinTrailingSDC4 || MaxTrailingSDC4 < data)) continue;
+// 	  AddDCRawHit(m_SdcOutRawHC[plane+NumOfLayersSDC3+1],
+// 		      plane+NumOfLayersSDC3+PlMinSdcOut, wire+1, data , lt);
+// 	}
+//       }
+//     }
+//   }
 
-  // SDC5
-  for(Int_t plane=0; plane<NumOfLayersSDC5; ++plane){
-    //const Int_t MaxWireSDC5 = (plane < 2) ? MaxWireSDC5X : MaxWireSDC5Y;
-    const Int_t MaxWireSDC5 = (plane < 2) ? MaxWireSDC5Y : MaxWireSDC5X;
-    for(Int_t wire=0; wire<MaxWireSDC5; ++wire){
-      for(Int_t lt=0; lt<2; ++lt){
-	auto nhit = gUnpacker.get_entries(DetIdSDC5, plane, 0, wire, lt);
-#if OscillationCut
-	if(nhit > MaxMultiHitDC) continue;
-#endif
-	for(Int_t i=0; i<nhit; ++i){
-	  auto data = gUnpacker.get(DetIdSDC5, plane, 0, wire, lt, i);
-	  if(lt == 0 && (data < MinTdcSDC5 || MaxTdcSDC5 < data)) continue;
-	  if(lt == 1 && (data < MinTrailingSDC5 || MaxTrailingSDC5 < data)) continue;
-	  AddDCRawHit(m_SdcOutRawHC[plane+NumOfLayersSDC3+NumOfLayersSDC4+1],
-		      plane+NumOfLayersSDC3+NumOfLayersSDC4+PlMinSdcOut, wire+1, data , lt);
-	}
-      }
-    }
-  }
+//   // SDC5
+//   for(Int_t plane=0; plane<NumOfLayersSDC5; ++plane){
+//     //const Int_t MaxWireSDC5 = (plane < 2) ? MaxWireSDC5X : MaxWireSDC5Y;
+//     const Int_t MaxWireSDC5 = (plane < 2) ? MaxWireSDC5Y : MaxWireSDC5X;
+//     for(Int_t wire=0; wire<MaxWireSDC5; ++wire){
+//       for(Int_t lt=0; lt<2; ++lt){
+// 	auto nhit = gUnpacker.get_entries(DetIdSDC5, plane, 0, wire, lt);
+// #if OscillationCut
+// 	if(nhit > MaxMultiHitDC) continue;
+// #endif
+// 	for(Int_t i=0; i<nhit; ++i){
+// 	  auto data = gUnpacker.get(DetIdSDC5, plane, 0, wire, lt, i);
+// 	  if(lt == 0 && (data < MinTdcSDC5 || MaxTdcSDC5 < data)) continue;
+// 	  if(lt == 1 && (data < MinTrailingSDC5 || MaxTrailingSDC5 < data)) continue;
+// 	  AddDCRawHit(m_SdcOutRawHC[plane+NumOfLayersSDC3+NumOfLayersSDC4+1],
+// 		      plane+NumOfLayersSDC3+NumOfLayersSDC4+PlMinSdcOut, wire+1, data , lt);
+// 	}
+//       }
+//     }
+//   }
 
   // Scaler
   for(Int_t l = 0; l<NumOfScaler; ++l){
@@ -361,43 +372,69 @@ RawData::DecodeHits()
   // Trigger Flag
   DecodeHodo(DetIdTrig, NumOfSegTrig, kOneSide, m_TrigRawHC);
   
-//  // Parasite ===========================================================
+// //  // Parasite ===========================================================
+//   // T1
+//   DecodeHodo(DetIdT1, NumOfSegT1, kOneSide,  m_T1RawHC);
+//   // T2
+//   DecodeHodo(DetIdT2, NumOfSegT2, kOneSide,  m_T2RawHC);
+//   // BAC
+//   DecodeHodo(DetIdE72BAC, NumOfSegE72BAC, kOneSide,  m_E72BACRawHC);
+//   // SAC
+//   DecodeHodo(DetIdE90SAC, NumOfSegE90SAC, kOneSide,  m_E90SACRawHC);
+//   // KVC
+//   DecodeHodo(DetIdE72KVC, NumOfSegE72KVC, kBothSide, m_E72KVCRawHC);
+//   // BH2
+//   DecodeHodo(DetIdE42BH2, NumOfSegE42BH2, kBothSide, m_E42BH2RawHC);
+//   // KVCSUM
+//   for(Int_t seg=0; seg<NumOfSegE72KVC; ++seg){
+//     for(Int_t AorT=0; AorT<2; ++AorT){
+//       for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdE72KVC, 0, seg, 2, AorT);
+// 	  m<nhit; ++m){
+// 	UInt_t data = gUnpacker.get(DetIdE72KVC, 0, seg, 2, AorT, m);
+// 	AddHodoRawHit(m_E72KVCSUMRawHC, DetIdE72KVC, 0, seg, 0, AorT, data);
+//       }
+//     }
+//   }
+//   // BH2MT
+//   for(Int_t seg=0; seg<NumOfSegE42BH2; ++seg){
+//     for(Int_t AorT=0; AorT<2; ++AorT){
+//       for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdE42BH2, 0, seg, 2, AorT);
+// 	  m<nhit; ++m){
+// 	UInt_t data = gUnpacker.get(DetIdE42BH2, 0, seg, 2, AorT, m);
+// 	AddHodoRawHit(m_E42BH2MTRawHC, DetIdE42BH2, 0, seg, 0, AorT, data);
+//       }
+//     }
+//   }
+//   m_is_decoded[kOthers] = true;
+//   return true;
+// }
+
+// KEKAR2023Dec ===========================================================
   // T1
-  DecodeHodo(DetIdT1, NumOfSegT1, kOneSide,  m_T1RawHC);
+  DecodeHodo(DetIdKEKART1, NumOfSegKEKART1, kOneSide,  m_KEKART1RawHC);
   // T2
-  DecodeHodo(DetIdT2, NumOfSegT2, kOneSide,  m_T2RawHC);
-  // BAC
-  DecodeHodo(DetIdE72BAC, NumOfSegE72BAC, kOneSide,  m_E72BACRawHC);
+  DecodeHodo(DetIdKEKART2, NumOfSegKEKART2, kOneSide,  m_KEKART2RawHC);
+  // T3
+  DecodeHodo(DetIdKEKART3, NumOfSegKEKART3, kOneSide,  m_KEKART3RawHC);
+  // T4
+  DecodeHodo(DetIdKEKART4, NumOfSegKEKART4, kOneSide,  m_KEKART4RawHC);
   // SAC
-  DecodeHodo(DetIdE90SAC, NumOfSegE90SAC, kOneSide,  m_E90SACRawHC);
+  DecodeHodo(DetIdKEKARE90SAC, NumOfSegKEKARE90SAC, kOneSide,  m_KEKARE90SACRawHC);
+  // SACSUM
+  DecodeHodo(DetIdKEKARE90SACSUM, NumOfSegKEKARE90SACSUM, kOneSide,  m_KEKARE90SACSUMRawHC);
+  // BAC
+  DecodeHodo(DetIdKEKARE72BAC, NumOfSegKEKARE72BAC, kOneSide,  m_KEKARE72BACRawHC);
+  // BACSUM
+  DecodeHodo(DetIdKEKARE72BACSUM, NumOfSegKEKARE72BACSUM, kOneSide,  m_KEKARE72BACSUMRawHC);
   // KVC
-  DecodeHodo(DetIdE72KVC, NumOfSegE72KVC, kBothSide, m_E72KVCRawHC);
-  // BH2
-  DecodeHodo(DetIdE42BH2, NumOfSegE42BH2, kBothSide, m_E42BH2RawHC);
+  DecodeHodo(DetIdKEKARE72KVC, NumOfSegKEKARE72KVC, kOneSide, m_KEKARE72KVCRawHC);
   // KVCSUM
-  for(Int_t seg=0; seg<NumOfSegE72KVC; ++seg){
-    for(Int_t AorT=0; AorT<2; ++AorT){
-      for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdE72KVC, 0, seg, 2, AorT);
-	  m<nhit; ++m){
-	UInt_t data = gUnpacker.get(DetIdE72KVC, 0, seg, 2, AorT, m);
-	AddHodoRawHit(m_E72KVCSUMRawHC, DetIdE72KVC, 0, seg, 0, AorT, data);
-      }
-    }
-  }
-  // BH2MT
-  for(Int_t seg=0; seg<NumOfSegE42BH2; ++seg){
-    for(Int_t AorT=0; AorT<2; ++AorT){
-      for(Int_t m=0, nhit=gUnpacker.get_entries(DetIdE42BH2, 0, seg, 2, AorT);
-	  m<nhit; ++m){
-	UInt_t data = gUnpacker.get(DetIdE42BH2, 0, seg, 2, AorT, m);
-	AddHodoRawHit(m_E42BH2MTRawHC, DetIdE42BH2, 0, seg, 0, AorT, data);
-      }
-    }
-  }
+  DecodeHodo(DetIdKEKARE72KVCSUM, NumOfSegKEKARE72KVCSUM, kOneSide, m_KEKARE72KVCSUMRawHC);
 
   m_is_decoded[kOthers] = true;
   return true;
 }
+
 
 //_____________________________________________________________________________
 Bool_t

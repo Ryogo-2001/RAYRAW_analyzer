@@ -41,6 +41,27 @@ const Int_t NumOfSegE72KVC   =  4;
 const Int_t NumOfSegE42BH2   =  8;
 const Int_t NumOfSegT1       =  1;
 const Int_t NumOfSegT2       =  1;
+// KEKAR2023Dec ___________________________________________________________
+const Int_t DetIdKEKART1           =  201;
+const Int_t DetIdKEKART2           =  202;
+const Int_t DetIdKEKART3           =  203;
+const Int_t DetIdKEKART4           =  204;
+const Int_t DetIdKEKARE90SAC       =  205;
+const Int_t DetIdKEKARE90SACSUM    =  206;
+const Int_t DetIdKEKARE72BAC       =  207;
+const Int_t DetIdKEKARE72BACSUM    =  208;
+const Int_t DetIdKEKARE72KVC       =  209;
+const Int_t DetIdKEKARE72KVCSUM    =  210;
+const Int_t NumOfSegKEKART1        =  1;
+const Int_t NumOfSegKEKART2        =  1;
+const Int_t NumOfSegKEKART3        =  1;
+const Int_t NumOfSegKEKART4        =  1;
+const Int_t NumOfSegKEKARE90SAC    =  8;
+const Int_t NumOfSegKEKARE90SACSUM =  1;
+const Int_t NumOfSegKEKARE72BAC    =  4;
+const Int_t NumOfSegKEKARE72BACSUM =  1;
+const Int_t NumOfSegKEKARE72KVC    =  4;
+const Int_t NumOfSegKEKARE72KVCSUM =  4;
 
 // Misc _______________________________________________________________
 const Int_t DetIdTrig       = 21;

@@ -59,6 +59,17 @@ private:
   HodoRHitContainer              m_E72KVCSUMRawHC;
   HodoRHitContainer              m_E42BH2RawHC;
   HodoRHitContainer              m_E42BH2MTRawHC;
+  // KEKAR2023Dec _______________________________________
+  HodoRHitContainer              m_KEKART1RawHC;
+  HodoRHitContainer              m_KEKART2RawHC;
+  HodoRHitContainer              m_KEKART3RawHC;
+  HodoRHitContainer              m_KEKART4RawHC;
+  HodoRHitContainer              m_KEKARE90SACRawHC;
+  HodoRHitContainer              m_KEKARE90SACSUMRawHC;
+  HodoRHitContainer              m_KEKARE72BACRawHC;
+  HodoRHitContainer              m_KEKARE72BACSUMRawHC;
+  HodoRHitContainer              m_KEKARE72KVCRawHC;
+  HodoRHitContainer              m_KEKARE72KVCSUMRawHC;
 
 public:
   void                     ClearAll();
@@ -91,6 +102,17 @@ public:
   const HodoRHitContainer& GetE72KVCSUMRawHC() const;
   const HodoRHitContainer& GetE42BH2RawHC() const;
   const HodoRHitContainer& GetE42BH2MTRawHC() const;
+  // KEKAR2023Dec _______________________________________
+  const HodoRHitContainer& GetKEKART1RawHC() const;
+  const HodoRHitContainer& GetKEKART2RawHC() const;
+  const HodoRHitContainer& GetKEKART3RawHC() const;
+  const HodoRHitContainer& GetKEKART4RawHC() const;
+  const HodoRHitContainer& GetKEKARE90SACRawHC() const;
+  const HodoRHitContainer& GetKEKARE90SACSUMRawHC() const;
+  const HodoRHitContainer& GetKEKARE72BACRawHC() const;
+  const HodoRHitContainer& GetKEKARE72BACSUMRawHC() const;
+  const HodoRHitContainer& GetKEKARE72KVCRawHC() const;
+  const HodoRHitContainer& GetKEKARE72KVCSUMRawHC() const;
 
 private:
   enum EDCDataType { kDcLeading, kDcTrailing, kDcOverflow, kDcNDataType };
@@ -244,7 +266,10 @@ RawData::GetVmeCalibRawHC() const
 {
   return m_VmeCalibRawHC;
 }
-// Parasite _______________________________________
+
+// +------------+
+// |  Parasite  |
+// +------------+
 //_____________________________________________________________________________
 inline const HodoRHitContainer&
 RawData::GetT1RawHC() const
@@ -299,6 +324,79 @@ inline const HodoRHitContainer&
 RawData::GetE42BH2MTRawHC() const
 {
   return m_E42BH2MTRawHC;
+}
+
+// +----------------+
+// |  KEKAR2023Dec  |
+// +----------------+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKART1RawHC() const
+{
+  return m_KEKART1RawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKART2RawHC() const
+{
+  return m_KEKART2RawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKART3RawHC() const
+{
+  return m_KEKART3RawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKART4RawHC() const
+{
+  return m_KEKART4RawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKARE90SACRawHC() const
+{
+  return m_KEKARE90SACRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKARE90SACSUMRawHC() const
+{
+  return m_KEKARE90SACSUMRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKARE72BACRawHC() const
+{
+  return m_KEKARE72BACRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKARE72BACSUMRawHC() const
+{
+  return m_KEKARE72BACSUMRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKARE72KVCRawHC() const
+{
+  return m_KEKARE72KVCRawHC;
+}
+
+//_____________________________________________________________________________
+inline const HodoRHitContainer&
+RawData::GetKEKARE72KVCSUMRawHC() const
+{
+  return m_KEKARE72KVCSUMRawHC;
 }
 
 #endif
