@@ -46,7 +46,6 @@ HodoHit::HodoHit(const HodoRawHit *rhit, Double_t max_time_diff)
     m_time_trailing(m_n_ch),
     m_ctime_leading(m_n_ch),
     m_ctime_trailing(m_n_ch),
-    m_pedcor_hg(-9999.), m_pedcor_lg(-9999.),
     m_is_clustered()
 {
   debug::ObjectCounter::increase(ClassName());

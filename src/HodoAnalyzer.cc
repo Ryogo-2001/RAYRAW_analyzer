@@ -15,22 +15,18 @@
 #include "DeleteUtility.hh"
 #include "FiberCluster.hh"
 #include "FiberHit.hh"
-#include "CFTFiberHit.hh"
-#include "CFTFiberCluster.hh"
 // #include "FLHit.hh"
 #include "FuncName.hh"
 #include "HodoHit.hh"
 #include "HodoCluster.hh"
 #include "RawData.hh"
 #include "UserParamMan.hh"
-#include "CFTPedCorMan.hh"
 
 #define REQDE   0
 
 namespace
 {
 const auto& gUser = UserParamMan::GetInstance();
-const auto& gPed  = CFTPedCorMan::GetInstance();    
 }
 
 //_____________________________________________________________________________
@@ -51,20 +47,6 @@ HodoAnalyzer::~HodoAnalyzer()
     del::ClearContainer(elem.second);
   debug::ObjectCounter::decrease(ClassName());
 }
-
-//_____________________________________________________________________________
-void
-HodoAnalyzer::CFTPedestalCor(const HodoRawHit* rhit, HodoHit *hit)
-{
-  Int_t plane = rhit->PlaneId();
-  Int_t seg   = rhit->SegmentId();
-  Double_t deltaHG=-9999.;
-  Double_t deltaLG=-9999.;      
-  gPed.PedestalCorrection(plane, seg, deltaHG, deltaLG, m_raw_data);
-  if (hit) hit->SetPedestalCor(deltaHG, deltaLG);      
-}
-
-
 
 //_____________________________________________________________________________
 Bool_t
@@ -193,13 +175,6 @@ HodoAnalyzer::TotCut(std::vector<T>& cont,
 // }
 
 //_____________________________________________________________________________
-void
-HodoAnalyzer::AdcCut(const TString& name, Double_t min, Double_t max)
-{
-  AdcCut(m_hodo_cluster_collection[name], min, max);
-}
-
-//_____________________________________________________________________________
 // Implementation of ADC cut for the cluster container
 template <typename T>
 void
@@ -209,7 +184,7 @@ HodoAnalyzer::AdcCut(std::vector<T>& cont,
   std::vector<T> DeleteCand;
   std::vector<T> ValidCand;
   for(Int_t i=0, n=cont.size(); i<n; ++i){
-    Double_t adc = dynamic_cast<CFTFiberCluster*>(cont.at(i))->MaxAdcLow();
+    Double_t adc = cont.at(i)->MaxAdcLow();
     if(amin < adc && adc < amax){
       ValidCand.push_back(cont.at(i));
     }else{

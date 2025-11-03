@@ -25,7 +25,6 @@
 #include "DebugCounter.hh"
 #include "DebugTimer.hh"
 #include "FiberCluster.hh"
-#include "CFTFiberCluster.hh"
 #include "FuncName.hh"
 #include "HodoHit.hh"
 #include "HodoAnalyzer.hh"
@@ -33,7 +32,7 @@
 #include "K18Parameters.hh"
 //#include "K18TrackU2D.hh"
 #include "K18TrackD2U.hh"
-#include "HypsTrack.hh"
+#include "S2sTrack.hh"
 #include "MathTools.hh"
 #include "MWPCCluster.hh"
 #include "RawData.hh"
@@ -51,7 +50,7 @@
 #define BcOut_XUV  0 // XUV Tracking (slow but accerate)
 #define BcOut_Pair 1 // Pair plane Tracking (fast but bad for large angle track)
 /* SdcInTracking */
-#define SdcIn_XUV         0 // XUV Tracking (not used in HYPS)
+#define SdcIn_XUV         0 // XUV Tracking (not used in S2S)
 #define SdcIn_Pair        1 // Pair plane Tracking (fast but bad for large angle track)
 #define SdcIn_Deletion    1 // Deletion method for too many combinations
 
@@ -67,31 +66,14 @@ const auto& gUser   = UserParamMan::GetInstance();
 //_____________________________________________________________________________
 const auto& valueNMR  = ConfMan::Get<Double_t>("FLDNMR");
 const Double_t& pK18 = ConfMan::Get<Double_t>("PK18");
-const Int_t& IdTOFUXL = gGeom.DetectorId("TOF-UX-L");
-const Int_t& IdTOFDXL = gGeom.DetectorId("TOF-DX-L");
-const Int_t& IdTOFDXR = gGeom.DetectorId("TOF-DX-R");  
-const Int_t& IdTOFUXR = gGeom.DetectorId("TOF-UX-R");
-const Int_t& IdLTOFUXL = gGeom.DetectorId("LEPS-TOF-UX-L");
-const Int_t& IdLTOFDXL = gGeom.DetectorId("LEPS-TOF-DX-L");
-const Int_t& IdLTOFUXR = gGeom.DetectorId("LEPS-TOF-UX-R");
-const Int_t& IdLTOFDXR = gGeom.DetectorId("LEPS-TOF-DX-R");
-const Int_t& IdLTOFUXTL = gGeom.DetectorId("LEPS-TOF-UX-Tilt-L");
-const Int_t& IdLTOFDXTL = gGeom.DetectorId("LEPS-TOF-DX-Tilt-L");
-const Int_t& IdLTOFUXTR = gGeom.DetectorId("LEPS-TOF-UX-Tilt-R");
-const Int_t& IdLTOFDXTR = gGeom.DetectorId("LEPS-TOF-DX-Tilt-R");
-const Int_t& IdTOFX = gGeom.DetectorId("TOF-X");
-const Int_t& IdTOFY = gGeom.DetectorId("TOF-Y");
-const Int_t& IdLTOFXTL = gGeom.DetectorId("LEPS-TOF-X-Tilt-L");
-const Int_t& IdLTOFYTL = gGeom.DetectorId("LEPS-TOF-Y-Tilt-L");
-const Int_t& IdLTOFXTR = gGeom.DetectorId("LEPS-TOF-X-Tilt-R");
-const Int_t& IdLTOFYTR = gGeom.DetectorId("LEPS-TOF-Y-Tilt-R");
-  
-
-
+const Int_t& IdTOFUX = gGeom.DetectorId("TOF-UX");
+const Int_t& IdTOFUY = gGeom.DetectorId("TOF-UY");
+const Int_t& IdTOFDX = gGeom.DetectorId("TOF-DX");
+const Int_t& IdTOFDY = gGeom.DetectorId("TOF-DY");
 
 const Double_t TimeDiffToYTOF = 77.3511; // [mm/ns]
 
-const Double_t MaxChiSqrHypsTrack = 10000.;
+const Double_t MaxChiSqrS2sTrack = 10000.;
 const Double_t MaxTimeDifMWPC       =   100.;
 
 const Double_t kMWPCClusteringWireExtension =  1.0; // [mm]
@@ -156,7 +138,6 @@ DCAnalyzer::DCAnalyzer(const RawData& raw_data)
     m_BcOutHC(),
     m_SdcInHC(),
     m_SdcOutHC(),
-    m_CFTHC(),    
     m_SdcInExTC(NumOfLayersSdcIn),
     m_SdcOutExTC(NumOfLayersSdcOut+1),
     m_MWPCClCont(NumOfLayersBcIn+1)
@@ -174,7 +155,6 @@ DCAnalyzer::DCAnalyzer()
     m_BcOutHC(),
     m_SdcInHC(),
     m_SdcOutHC(),
-    m_CFTHC(),        
     m_SdcInExTC(NumOfLayersSdcIn),
     m_SdcOutExTC(NumOfLayersSdcOut+1),
     m_MWPCClCont(NumOfLayersBcIn+1)
@@ -188,7 +168,7 @@ DCAnalyzer::~DCAnalyzer()
   for(auto& elem: m_dc_hit_collection)
     del::ClearContainer(elem.second);
 
-  ClearHypsTracks();
+  ClearS2sTracks();
 #if UseBcIn
   ClearK18TracksU2D();
   ClearTracksBcIn();
@@ -199,22 +179,20 @@ DCAnalyzer::~DCAnalyzer()
   ClearTracksBcOut();
   ClearTracksBcOutSdcIn();
   ClearTracksSdcInSdcOut();
-  ClearTracksCFT();  
   ClearDCHits();
   ClearVtxHits();
-  ClearCFTHits();  
   debug::ObjectCounter::decrease(ClassName());
 }
 
 
 //_____________________________________________________________________________
 void
-DCAnalyzer::PrintHyps(const TString& arg) const
+DCAnalyzer::PrintS2s(const TString& arg) const
 {
-  Int_t nn = m_HypsTC.size();
+  Int_t nn = m_S2sTC.size();
   hddaq::cout << FUNC_NAME << " " << arg << std::endl
-              << "   HypsTC.size : " << nn << std::endl;
-  for(const auto& track: m_HypsTC){
+              << "   S2sTC.size : " << nn << std::endl;
+  for(const auto& track: m_S2sTC){
     hddaq::cout << " Niter=" << std::setw(3) << track->Niteration()
                 << " ChiSqr=" << track->ChiSquare()
                 << " P=" << track->PrimaryMomentum().Mag()
@@ -347,25 +325,6 @@ DCAnalyzer::DecodeSdcOutHits(Double_t ofs_dt/*=0.*/)
     }
     plane_offset += n_plane;
   }
-  return true;
-}
-
-//_____________________________________________________________________________
-Bool_t
-DCAnalyzer::DecodeCFTHits(const HodoCC& HitCont)
-{
-  static const auto& digit_info =
-    hddaq::unpacker::GConfig::get_instance().get_digit_info();
-  m_CFTHC.clear();
-
-  Int_t id = digit_info.get_device_id("CFT");
-  Int_t n_plane = digit_info.get_n_plane(id);
-  m_CFTHC.resize(n_plane);  
-
-  for(const auto& hit: HitCont){
-    m_CFTHC[hit->PlaneId()].push_back(dynamic_cast<CFTFiberCluster*>(hit));
-  }
-
   return true;
 }
 
@@ -529,63 +488,39 @@ DCAnalyzer::DecodeTOFHits(const HodoHC& HitCont)
   ClearTOFHits();
 
   // for the tilting plane case
-  static const Double_t RA2[3] ={0,-15,15};
-  static const TVector3 TOFPos[4] = {
-    gGeom.GetGlobalPosition("TOF-UX-R"),
-    gGeom.GetGlobalPosition("TOF-DX-R"),
-    gGeom.GetGlobalPosition("TOF-UX-L"),
-    gGeom.GetGlobalPosition("TOF-DX-L")
-  };
+  static const Double_t RA2 = gGeom.GetRotAngle2("TOF");
+  static const TVector3 TOFPos[2] = { gGeom.GetGlobalPosition("TOF-UX"),
+				      gGeom.GetGlobalPosition("TOF-DX") };
 
   for(const auto& hodo_hit: HitCont){
     const Double_t seg = hodo_hit->SegmentId()+1;
     const Double_t dt  = hodo_hit->TimeDiff();
     Int_t layer_x = -1;
     Int_t layer_y = -1;
-    Int_t Posindex= -1;
-    Int_t RA2index= 0;
-    if((Int_t)seg%2==1 && seg>12 && seg<25){
-      layer_x  = IdTOFUXR;
-      layer_y  = IdTOFY;
-      Posindex=0;
-      RA2index=0;
+    if((Int_t)seg%2==0){
+      layer_x  = IdTOFUX;
+      layer_y  = IdTOFUY;
     }
-    if((Int_t)seg%2==0 && seg>12 && seg<25){
-      layer_x  = IdTOFDXR;
-      layer_y  = IdTOFY;
-      Posindex=1;
-      RA2index=0;
+    if((Int_t)seg%2==1){
+      layer_x  = IdTOFDX;
+      layer_y  = IdTOFDY;
     }
-    if((Int_t)seg%2==1 && seg>24 && seg<37){
-      layer_x  = IdTOFDXL;
-      layer_y  = IdTOFY;
-      Posindex=3;
-      RA2index=0;
-    }
-    if((Int_t)seg%2==0 && seg>24 && seg<37){
-      layer_x  = IdTOFUXL;
-      layer_y  = IdTOFY;
-      Posindex=2;
-      RA2index=0;
-    }
-    if(Posindex==-1) continue;
     Double_t wpos = gGeom.CalcWirePosition(layer_x, seg-1);
     TVector3 w(wpos, 0., 0.);
-    w.RotateY(RA2[RA2index]*TMath::DegToRad()); // for the tilting plane case
-    const TVector3 hit_pos = TOFPos[Posindex] + w
+    w.RotateY(RA2*TMath::DegToRad()); // for the tilting plane case
+    const TVector3 hit_pos = TOFPos[(Int_t)seg%2] + w
       + TVector3(0., dt*TimeDiffToYTOF, 0.);
     // X
-    DCHit *dc_hit_x = new DCHit(IdTOFX, seg-1);
+    DCHit *dc_hit_x = new DCHit(layer_x, seg-1);
     dc_hit_x->SetWirePosition(hit_pos.x());
-    dc_hit_x->SetZ(gGeom.GetLocalZ(layer_x));
+    dc_hit_x->SetZ(hit_pos.z());
     dc_hit_x->SetTiltAngle(0.);
     dc_hit_x->SetDCData();
     m_TOFHC.push_back(dc_hit_x);
     // Y
-    DCHit *dc_hit_y = new DCHit(IdTOFY, seg-1);
+    DCHit *dc_hit_y = new DCHit(layer_y, seg-1);
     dc_hit_y->SetWirePosition(hit_pos.y());
-    dc_hit_y->SetZ(gGeom.GetLocalZ(layer_x));
-    //dc_hit_y->SetTiltAngle(135.);
+    dc_hit_y->SetZ(hit_pos.z());
     dc_hit_y->SetTiltAngle(90.);
     dc_hit_y->SetDCData();
     m_TOFHC.push_back(dc_hit_y);
@@ -600,134 +535,40 @@ DCAnalyzer::DecodeTOFHits(const HodoClusterContainer& ClCont)
 {
   ClearTOFHits();
 
-  static const Double_t RA2[3] ={0.0,-15.0,15.0};
-  static const TVector3 TOFPos[12] = {
-    gGeom.GetGlobalPosition("TOF-UX-R"),
-    gGeom.GetGlobalPosition("TOF-DX-R"),
-    gGeom.GetGlobalPosition("TOF-UX-L"),
-    gGeom.GetGlobalPosition("TOF-DX-L"),
-    gGeom.GetGlobalPosition("LEPS-TOF-UX-R"),
-    gGeom.GetGlobalPosition("LEPS-TOF-DX-R"),
-    gGeom.GetGlobalPosition("LEPS-TOF-UX-L"),
-    gGeom.GetGlobalPosition("LEPS-TOF-DX-L"), 
-    gGeom.GetGlobalPosition("LEPS-TOF-UX-Tilt-R"),
-    gGeom.GetGlobalPosition("LEPS-TOF-DX-Tilt-R"),
-    gGeom.GetGlobalPosition("LEPS-TOF-UX-Tilt-L"),
-    gGeom.GetGlobalPosition("LEPS-TOF-DX-Tilt-L"),
-  };
+  static const Double_t RA2 = gGeom.GetRotAngle2("TOF");
+  static const TVector3 TOFPos[2] = {
+    gGeom.GetGlobalPosition("TOF-UX"),
+    gGeom.GetGlobalPosition("TOF-DX") };
 
   for(const auto& hodo_cluster: ClCont){
     const Double_t seg = hodo_cluster->MeanSeg()+1;
     const Double_t dt  = hodo_cluster->TimeDiff();
     Int_t layer_x = -1;
     Int_t layer_y = -1;
-    Int_t layerid_x =-1;
-    Int_t Posindex= -1;
-    Int_t RA2index= 0;
-    if((Int_t)seg%2==1 && seg<11 && seg>0){
-      layer_x  = IdLTOFUXTR;
-      layerid_x = IdLTOFXTR;
-      layer_y  = IdLTOFYTR;
-      Posindex=8;
-      RA2index=1;
+    if((Int_t)seg%2==0){
+      layer_x  = IdTOFUX;
+      layer_y  = IdTOFUY;
     }
-    if((Int_t)seg%2==0 && seg<11 && seg>0){
-      layer_x  = IdLTOFDXTR;
-      layerid_x = IdLTOFXTR;
-      layer_y  = IdLTOFYTR;
-      Posindex=9;
-      RA2index=1;
+    if((Int_t)seg%2==1){
+      layer_x  = IdTOFDX;
+      layer_y  = IdTOFDY;
     }
-    if(seg==11){
-      layer_x =IdLTOFUXR;
-      layerid_x =IdTOFX;
-      layer_y =IdTOFY;
-      Posindex=4;
-      RA2index=0;
-    }
-    if(seg==12){
-      layer_x =IdLTOFDXR;
-      layerid_x =IdTOFX;
-      layer_y =IdTOFY;
-      Posindex=5;
-      RA2index=0;
-    }
-    if((Int_t)seg%2==1 && seg>12 && seg<25){
-      layer_x  = IdTOFUXR;
-      layerid_x=IdTOFX;
-      layer_y  = IdTOFY;
-      Posindex=0;
-      RA2index=0;
-    }
-    if((Int_t)seg%2==0 && seg>12 && seg<25){
-      layer_x  = IdTOFDXR;
-      layerid_x= IdTOFX;
-      layer_y  = IdTOFY;
-      Posindex=1;
-      RA2index=0;
-    }
-    if((Int_t)seg%2==1 && seg>24 && seg<37){
-      layer_x  = IdTOFDXL;
-      layerid_x= IdTOFX;
-      layer_y  = IdTOFY;
-      Posindex=3;
-      RA2index=0;
-    }
-    if((Int_t)seg%2==0 && seg>24 && seg<37){
-      layer_x  = IdTOFUXL;
-      layerid_x= IdTOFX;
-      layer_y  = IdTOFY;
-      Posindex=2;
-      RA2index=0;
-    }
-    if(seg==37){
-      layer_x =IdLTOFDXL;
-      layerid_x=IdTOFX;
-      layer_y =IdTOFY;
-      Posindex=7;
-      RA2index=0;
-    }
-    if(seg==38){
-      layer_x =IdLTOFUXL;
-      layerid_x=IdTOFX;
-      layer_y =IdTOFY;
-      Posindex=6;
-      RA2index=0;
-    }
-    if((Int_t)seg%2==1 && seg>38){
-      layer_x  = IdLTOFDXTL;
-      layerid_x= IdLTOFXTL;
-      layer_y  = IdLTOFYTL;
-      Posindex=11;
-      RA2index=2;
-    }
-    if((Int_t)seg%2==0 && seg>38){
-      layer_x  = IdLTOFUXTL;
-      layerid_x= IdLTOFXTL;
-      layer_y  = IdLTOFYTL;
-      Posindex=10;
-      RA2index=2;
-    }
-    if(Posindex==-1) continue;
-
     Double_t wpos = gGeom.CalcWirePosition(layer_x, seg-1);
     TVector3 w(wpos, 0., 0.);
-    w.RotateY(RA2[RA2index]*TMath::DegToRad());
-    const TVector3& hit_pos = TOFPos[Posindex] + w
+    w.RotateY(RA2*TMath::DegToRad());
+    const TVector3& hit_pos = TOFPos[(Int_t)seg%2] + w
       + TVector3(0., dt*TimeDiffToYTOF, 0.);
-    //std::cout<<"TOF seg="<<seg<<", hit_pos=("<<hit_pos.x()<<", "<<hit_pos.y()<<", "<<hit_pos.z()<<")"<<std::endl;
     // X
-    Double_t diffLandG=gGeom.GetLocalZ("TOF-X")-gGeom.GetGlobalPosition("TOF-X").z();
-    DCHit *dc_hit_x = new DCHit(layerid_x, seg-1);
+    DCHit *dc_hit_x = new DCHit(layer_x, seg-1);
     dc_hit_x->SetWirePosition(hit_pos.x());
-    dc_hit_x->SetZ(hit_pos.z()+diffLandG);
+    dc_hit_x->SetZ(hit_pos.z());
     dc_hit_x->SetTiltAngle(0.);
     dc_hit_x->SetDCData();
     m_TOFHC.push_back(dc_hit_x);
     // Y
     DCHit *dc_hit_y = new DCHit(layer_y, seg-1);
     dc_hit_y->SetWirePosition(hit_pos.y());
-    dc_hit_y->SetZ(hit_pos.z()+diffLandG);
+    dc_hit_y->SetZ(hit_pos.z());
     dc_hit_y->SetTiltAngle(90.);
     dc_hit_y->SetDCData();
     m_TOFHC.push_back(dc_hit_y);
@@ -860,42 +701,6 @@ DCAnalyzer::TrackSearchBcOutSdcIn()
                                     m_SdcInHC, PPInfoSdcIn,
                                     NPPInfoBcOut, NPPInfoSdcIn,
                                     m_BcOutSdcInTC, MinLayer);
-
-  return true;
-}
-
-//_____________________________________________________________________________
-Bool_t
-DCAnalyzer::TrackSearchSdcInSdcOut()
-{
-  static const Int_t MinLayer = gUser.GetParameter("MinLayerSdcInSdcOut");
-
-  track::LocalTrackSearchSdcInSdcOut(m_SdcInHC, PPInfoSdcIn,
-				    m_SdcOutHC, PPInfoSdcOut,
-                                    NPPInfoSdcIn, NPPInfoSdcOut,
-                                    m_SdcInSdcOutTC, MinLayer);
-
-  return true;
-}
-
-//_____________________________________________________________________________
-Bool_t
-DCAnalyzer::TrackSearchCFT()
-{
-  static const Int_t MinLayerPhi = gUser.GetParameter("MinLayerCFTPhi");
-  static const Int_t MinLayerUV = gUser.GetParameter("MinLayerCFTUV");  
-
-  track::LocalTrackSearchCFT(m_CFTHC, NumOfPlaneCFT,
-			     m_CFTTC, MinLayerPhi, MinLayerUV);
-
-  return true;
-}
-
-//_____________________________________________________________________________
-Bool_t
-DCAnalyzer::TrackSearchCFT_16layer()
-{
-  track::LocalTrackSearchCFT_16layer(m_CFTTC, m_CFT16TC);
 
   return true;
 }
@@ -1073,9 +878,9 @@ DCAnalyzer::TrackSearchK18D2U(const std::vector<Double_t>& XinCont)
 
 //_____________________________________________________________________________
 Bool_t
-DCAnalyzer::TrackSearchHyps()
+DCAnalyzer::TrackSearchS2s()
 {
-  ClearHypsTracks();
+  ClearS2sTracks();
 
   auto nIn = m_SdcInTC.size();
   auto nOut = m_SdcOutTC.size();
@@ -1085,47 +890,42 @@ DCAnalyzer::TrackSearchHyps()
     if(!trIn || !trIn->GoodForTracking()) continue;
     for(Int_t iOut=0; iOut<nOut; ++iOut){
       const auto& trOut = GetTrackSdcOut(iOut);
-      //if(!trOut || !trOut->GoodForTracking()) continue;
-      double xtof=trOut->GetX(gGeom.LocalZ("TOF-X"));
-      //if(!trOut || fabs(xtof)>1000.) continue;
-      auto trHyps = new HypsTrack(trIn, trOut);
-      if(!trHyps) continue;
+      if(!trOut || !trOut->GoodForTracking()) continue;
+      auto trS2s = new S2sTrack(trIn, trOut);
+      if(!trS2s) continue;
       Double_t u0In    = trIn->GetU0();
       Double_t u0Out   = trOut->GetU0();
       // Double_t v0In    = trIn->GetV0();
       // Double_t v0Out   = trOut->GetV0();
       Double_t bending = u0Out - u0In;
       // Double_t p[3] = { 0.08493, 0.2227, 0.01572 };
-      Double_t p[3] = { 0.244, 0.346, -0.0207 };
-      Double_t initial_momentum = p[0] + p[1]/(fabs(bending)-p[2]);
+      // Double_t initial_momentum = p[0] + p[1]/(bending-p[2]);
       Double_t s = valueNMR/TMath::Abs(valueNMR);
       // Double_t initial_momentum = s*pK18;
-      //Double_t initial_momentum = 1.4;
-      if(bending>0. && initial_momentum>0.){
-        trHyps->SetInitialMomentum(initial_momentum);
-      }else if(bending<0. && initial_momentum>0.){
-	trHyps->SetInitialMomentum(-initial_momentum);
-      }
-      else {
-        trHyps->SetInitialMomentum(0.7);
+      Double_t initial_momentum = 1.4;
+      if(false
+         && bending>0. && initial_momentum>0.){
+        trS2s->SetInitialMomentum(initial_momentum);
+      } else {
+        trS2s->SetInitialMomentum(initial_momentum);
       }
       if(true
-         && trHyps->DoFit()
-         && trHyps->ChiSquare()<MaxChiSqrHypsTrack){
-        // trHyps->Print("in "+FUNC_NAME);
-        m_HypsTC.push_back(trHyps);
+         && trS2s->DoFit()
+         && trS2s->ChiSquare()<MaxChiSqrS2sTrack){
+        // trS2s->Print("in "+FUNC_NAME);
+        m_S2sTC.push_back(trS2s);
       }
       else{
-        // trHyps->Print("in "+FUNC_NAME);
-        delete trHyps;
+        // trS2s->Print("in "+FUNC_NAME);
+        delete trS2s;
       }
     }
   }
 
-  std::sort(m_HypsTC.begin(), m_HypsTC.end(), HypsTrackComp());
+  std::sort(m_S2sTC.begin(), m_S2sTC.end(), S2sTrackComp());
 
 #if 0
-  PrintHyps("Before Deleting");
+  PrintS2s("Before Deleting");
 #endif
 
   return true;
@@ -1133,9 +933,9 @@ DCAnalyzer::TrackSearchHyps()
 
 //_____________________________________________________________________________
 Bool_t
-DCAnalyzer::TrackSearchHyps(Double_t initial_momentum)
+DCAnalyzer::TrackSearchS2s(Double_t initial_momentum)
 {
-  ClearHypsTracks();
+  ClearS2sTracks();
 
   Int_t nIn  = GetNtracksSdcIn();
   Int_t nOut = GetNtracksSdcOut();
@@ -1148,23 +948,23 @@ DCAnalyzer::TrackSearchHyps(Double_t initial_momentum)
     for(Int_t iOut=0; iOut<nOut; ++iOut){
       const auto& trOut = GetTrackSdcOut(iOut);
       if(!trOut->GoodForTracking()) continue;
-      HypsTrack *trHyps = new HypsTrack(trIn, trOut);
-      if(!trHyps) continue;
-      trHyps->SetInitialMomentum(initial_momentum);
-      if(trHyps->DoFit() && trHyps->ChiSquare()<MaxChiSqrHypsTrack){
-        m_HypsTC.push_back(trHyps);
+      S2sTrack *trS2s = new S2sTrack(trIn, trOut);
+      if(!trS2s) continue;
+      trS2s->SetInitialMomentum(initial_momentum);
+      if(trS2s->DoFit() && trS2s->ChiSquare()<MaxChiSqrS2sTrack){
+        m_S2sTC.push_back(trS2s);
       }
       else{
-        // trHyps->Print(" in "+FUNC_NAME);
-        delete trHyps;
+        // trS2s->Print(" in "+FUNC_NAME);
+        delete trS2s;
       }
     }// for(iOut)
   }// for(iIn)
 
-  std::sort(m_HypsTC.begin(), m_HypsTC.end(), HypsTrackComp());
+  std::sort(m_S2sTC.begin(), m_S2sTC.end(), S2sTrackComp());
 
 #if 0
-  PrintHyps("Before Deleting");
+  PrintS2s("Before Deleting");
 #endif
 
   return true;
@@ -1228,15 +1028,6 @@ DCAnalyzer::ClearTOFHits()
 }
 
 //_____________________________________________________________________________
-void
-DCAnalyzer::ClearCFTHits()
-{
-  for (Int_t i=0; i<m_CFTHC.size(); ++i)
-    m_CFTHC[i].clear();
-  //del::ClearContainer(m_CFTHC);
-}
-
-//_____________________________________________________________________________
 #if UseBcIn
 void
 DCAnalyzer::ClearTracksBcIn()
@@ -1286,9 +1077,9 @@ DCAnalyzer::ClearK18TracksD2U()
 
 //_____________________________________________________________________________
 void
-DCAnalyzer::ClearHypsTracks()
+DCAnalyzer::ClearS2sTracks()
 {
-  del::ClearContainer(m_HypsTC);
+  del::ClearContainer(m_S2sTC);
 }
 
 //_____________________________________________________________________________
@@ -1303,14 +1094,6 @@ void
 DCAnalyzer::ClearTracksSdcInSdcOut()
 {
   del::ClearContainer(m_SdcInSdcOutTC);
-}
-
-//_____________________________________________________________________________
-void
-DCAnalyzer::ClearTracksCFT()
-{
-  del::ClearContainer(m_CFTTC);
-  del::ClearContainer(m_CFT16TC);  
 }
 
 #if UseBcIn
@@ -1392,12 +1175,12 @@ DCAnalyzer::ReCalcTrack(K18TC& cont, Bool_t applyRecursively)
 
 //_____________________________________________________________________________
 Bool_t
-DCAnalyzer::ReCalcTrack(HypsTC& cont,
+DCAnalyzer::ReCalcTrack(S2sTC& cont,
                         Bool_t applyRecursively)
 {
   const std::size_t n = cont.size();
   for(std::size_t i=0; i<n; ++i){
-    HypsTrack *track = cont[i];
+    S2sTrack *track = cont[i];
     if(track) track->ReCalc(applyRecursively);
   }
   return true;
@@ -1456,9 +1239,9 @@ DCAnalyzer::ReCalcK18TrackD2U(Bool_t applyRecursively)
 
 //_____________________________________________________________________________
 Bool_t
-DCAnalyzer::ReCalcHypsTrack(Bool_t applyRecursively)
+DCAnalyzer::ReCalcS2sTrack(Bool_t applyRecursively)
 {
-  return ReCalcTrack(m_HypsTC, applyRecursively);
+  return ReCalcTrack(m_S2sTC, applyRecursively);
 }
 
 //_____________________________________________________________________________
@@ -1475,7 +1258,7 @@ DCAnalyzer::ReCalcAll()
   ReCalcTrackSdcOut();
 
   //ReCalcK18TrackD2U();
-  ReCalcHypsTrack();
+  ReCalcS2sTrack();
 
   return true;
 }
@@ -1681,13 +1464,6 @@ DCAnalyzer::TotCutBCOut(Double_t min_tot)
   for(const auto& name: DCNameList.at("BcOut")){
     TotCut(name, min_tot, true);
   }// for(i)
-}
-
-//_____________________________________________________________________________
-void
-DCAnalyzer::TotCutSDC0(Double_t min_tot)
-{
-  TotCut("SDC0", min_tot, true);
 }
 
 //_____________________________________________________________________________

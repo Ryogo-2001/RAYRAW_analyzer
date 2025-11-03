@@ -32,11 +32,7 @@ const auto& gPHC  = HodoPHCMan::GetInstance();
 //_____________________________________________________________________________
 FiberHit::FiberHit(HodoRawHit *rhit)
   : HodoHit(rhit),
-    m_position(qnan),
-    m_adccor_hi(m_n_ch),
-    m_adccor_low(m_n_ch),
-    m_mip_hi(m_n_ch),
-    m_mip_low(m_n_ch)
+    m_position(qnan)
 {
   debug::ObjectCounter::increase(ClassName());
 }
@@ -52,8 +48,7 @@ bool
 FiberHit::Calculate()
 {
   if(!HodoHit::Calculate())
-    ;
-    //return false;
+    return false;
 
   m_is_clustered.clear();
 
@@ -87,67 +82,48 @@ FiberHit::Calculate()
   }
   m_time_trailing = trailing;
 
-  if (id != 31) {
-    Int_t layer = gGeom.GetDetectorId(DetectorName()+"-"+PlaneName());
-    m_position = gGeom.CalcWirePosition(layer, seg);
-    m_dxdw     = gGeom.dXdW(layer);
-  }
-  //return true;
-  
-#if 1
-  if(id==31){// CFT ADC
-    Int_t ch=0;
-    m_adccor_hi[ch].clear();
-    m_adccor_low[ch].clear();
-    m_mip_hi[ch].clear();
-    m_mip_low[ch].clear();                  
+  Int_t layer = gGeom.GetDetectorId(DetectorName()+"-"+PlaneName());
+  m_position = gGeom.CalcWirePosition(layer, seg);
+  m_dxdw     = gGeom.dXdW(layer);
 
-    Double_t nhit_adc = m_raw->GetSizeAdcHigh();
+  return true;
+
+#if 0
+  if(id==113){// CFT ADC
+    Double_t nhit_adc = m_raw->GetSizeAdc1();
     if(nhit_adc>0){
-      Double_t hi  =  m_raw->GetAdcHigh();
-      Double_t low =  -9999.;
-      if (m_raw->GetSizeAdcLow()>0)
-	low =  m_raw->GetAdcLow();
-
+      Double_t hi  =  m_raw->GetAdc1();
+      Double_t low =  m_raw->GetAdc2();
       Double_t pedeHi  = gHodo.GetP0(id, plane, seg, 0);
       Double_t pedeLow = gHodo.GetP0(id, plane, seg, 1);
       Double_t gainHi  = gHodo.GetP1(id, plane, seg, 0);// pedestal+mip(or peak)
       Double_t gainLow = gHodo.GetP1(id, plane, seg, 1);// pedestal+mip(or peak)
-      Double_t Alow = gHodo.GetP0(id, plane, 0, 3);// same value for the same layer
-      Double_t Blow = gHodo.GetP1(id, plane, 0, 3);// same value for the same layer
+      Double_t Alow = gHodo.GetP0(id,plane,0/*seg*/,3);// same value for the same layer
+      Double_t Blow = gHodo.GetP1(id,plane,0/*seg*/,3);// same value for the same layer
 
-      if (hi>0) {
-	Double_t adccor_hi  = hi  - pedeHi;
-	if (m_pedcor_hg>-2000 && hi >0)
-	  adccor_hi  = hi  + m_pedcor_hg;
+      if (hi>0)
+	m_adc_hg  = hi  - pedeHi;
+      if (low>0)
+	m_adc_lg = low - pedeLow;
+      //m_mip_hg  = (hi  - pedeHi)/(gainHi  - pedeHi);
+      //m_mip_lg = (low - pedeLow)/(gainLow - pedeLow);
+      if (m_pedcor_hg>-2000 && hi >0)
+	m_adc_hg  = hi  + m_pedcor_hg;
+      if (m_pedcor_lg>-2000 && low >0)
+	m_adc_lg  = low  + m_pedcor_lg;
 
-	m_adccor_hi[ch].push_back(adccor_hi);	
-
-	Double_t mip_hi = adccor_hi/gainHi ;
-	m_mip_hi[ch].push_back(mip_hi);	
-      }
-
-      if (low>0) {
-	Double_t adccor_low = low - pedeLow;
-
-	if (m_pedcor_lg>-2000 && low >0)
-	  adccor_low  = low  + m_pedcor_lg;
-
-	m_adccor_low[ch].push_back(adccor_low);		
-
-	Double_t mip_low = adccor_low/gainLow;	
-	m_mip_low[ch].push_back(mip_low);
-
-	Double_t de_low = 0; // MeV
-	if(mip_low>0){
-	  de_low = -(Alow/Blow) * log(1. - mip_low/Alow);// [MeV]
-	  if(1-mip_low/Alow<0){ // when pe is too big
-	    de_low = -(Alow/Blow) * log(1. - (Alow-0.001)/Alow);// [MeV] almost max
-	  }
+      if (m_adc_hg>0/* && gainHi > 0*/)
+	m_mip_hg  = m_adc_hg/gainHi ;
+      if (m_adc_lg>0/* && gainLow >0*/)
+	m_mip_lg = m_adc_lg/gainLow;
+      if(m_mip_lg>0){
+	m_dE_lg = -(Alow/Blow) * log(1. - m_mip_lg/Alow);// [MeV]
+	if(1-m_mip_lg/Alow<0){ // when pe is too big
+	  m_dE_lg = -(Alow/Blow) * log(1. - (Alow-0.001)/Alow);// [MeV] almost max
 	}
-	m_de_low[ch].push_back(de_low);
+      }else{
+	m_dE_lg = 0;// [MeV]
       }
-
 #if 0
       if(m_dE_lg > 10){
         std::cout << "layer = " << plane << ", seg = " << seg << ", adcLow = "
@@ -156,8 +132,6 @@ FiberHit::Calculate()
                   << gainHi << std::endl;
       }
 #endif
-
-#if 0      
       for(auto& pair: m_pair_cont){
 	Double_t time= pair.time_l;
 	Double_t ctime = -100;
@@ -167,13 +141,12 @@ FiberHit::Calculate()
 	} else
 	  pair.ctime_l = time;
       }
-#endif      
     }
   }
 #endif
   m_is_calculated = true;
 
-  //HodoHit::Print();
+  HodoHit::Print();
   return true;
 }
 

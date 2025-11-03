@@ -20,7 +20,7 @@
 #include "Exception.hh"
 #include "FieldMan.hh"
 #include "FuncName.hh"
-#include "HypsTrack.hh"
+#include "S2sTrack.hh"
 #include "PrintHelper.hh"
 
 namespace
@@ -29,12 +29,10 @@ const auto& gGeom   = DCGeomMan::GetInstance();
 auto&       gEvDisp = EventDisplay::GetInstance();
 const auto& gField  = FieldMan::GetInstance();
 // const Int_t& IdTOF    = gGeom.DetectorId("TOF");
-const Int_t& IdTOF_X = gGeom.DetectorId("TOF-X");
-const Int_t& IdTOF_Y = gGeom.DetectorId("TOF-Y");
-const Int_t& IdLTOF_X_TL = gGeom.DetectorId("LEPS-TOF-X-Tilt-L");
-const Int_t& IdLTOF_Y_TL = gGeom.DetectorId("LEPS-TOF-Y-Tilt-L");
-const Int_t& IdLTOF_X_TR = gGeom.DetectorId("LEPS-TOF-X-Tilt-R");
-const Int_t& IdLTOF_Y_TR = gGeom.DetectorId("LEPS-TOF-Y-Tilt-R");
+const Int_t& IdTOF_UX = gGeom.DetectorId("TOF-UX");
+const Int_t& IdTOF_UY = gGeom.DetectorId("TOF-UY");
+const Int_t& IdTOF_DX = gGeom.DetectorId("TOF-DX");
+const Int_t& IdTOF_DY = gGeom.DetectorId("TOF-DY");
 const Int_t& IdTarget = gGeom.DetectorId("Target");
 const Int_t& IdRKINIT = gGeom.DetectorId("RKINIT");
 
@@ -637,9 +635,9 @@ RK::CheckCrossing(Int_t lnum, const RKTrajectoryPoint &startPoint,
   crossPoint.posG = ThreeVector(x, y, z);
   crossPoint.momG = ThreeVector(pz*u, pz*v, pz);
 
-  if(lnum==IdTOF_X || lnum==IdLTOF_X_TL || lnum==IdLTOF_X_TR)
+  if(lnum==IdTOF_UX || lnum==IdTOF_DX)
     crossPoint.s = crossPoint.posG.x();
-  else if(lnum==IdTOF_Y || lnum==IdLTOF_Y_TL || lnum==IdLTOF_Y_TR)
+  else if(lnum==IdTOF_UY || lnum==IdTOF_DY)
     crossPoint.s = crossPoint.posG.y();
   else
     crossPoint.s = gGeom.Global2LocalPos(lnum, crossPoint.posG).x();
@@ -823,9 +821,9 @@ RK::Trace(const RKCordParameter &initial, RKHitPointContainer &hitContainer)
       if(iPlane<0) {
 	if(gEvDisp.IsReady()){
 	  Double_t q = hitContainer[0].second.MomentumInGlobal().z();
-	  gEvDisp.DrawHypsTrack(iStep, StepPoint, q);
+	  gEvDisp.DrawS2sTrack(iStep, StepPoint, q);
         }
-	return HypsTrack::kPassed;
+	return S2sTrack::kPassed;
       }
     } // while(RKcheckCrossing())
 
@@ -837,7 +835,7 @@ RK::Trace(const RKCordParameter &initial, RKHitPointContainer &hitContainer)
 		  << " iPlane=" << std::dec << hitContainer[iPlane+1].first
 		  << std::endl;
 #endif
-      return HypsTrack::kExceedMaxPathLength;
+      return S2sTrack::kExceedMaxPathLength;
     }
     prevPoint = nextPoint;
   }// while(++iStep)
@@ -850,7 +848,7 @@ RK::Trace(const RKCordParameter &initial, RKHitPointContainer &hitContainer)
 	      << std::endl;
 #endif
 
-  return HypsTrack::kExceedMaxStep;
+  return S2sTrack::kExceedMaxStep;
 }
 
 //_____________________________________________________________________________
@@ -868,7 +866,7 @@ RK::TraceToLast(RKHitPointContainer& hitContainer)
   //   }
   // }
 
-  for(const auto& key : {"RKINIT"}){
+  for(const auto& key : {"RKINIT", "AC1", "WC-U", "WC-D", "VP11"}){
     auto id = gGeom.DetectorId(key);
     hitContainer.push_back(std::make_pair(id, RKcalcHitPoint()));
   }
@@ -899,7 +897,7 @@ RK::TraceToLast(RKHitPointContainer& hitContainer)
       if(++iPlane>=nPlane){
 	if(gEvDisp.IsReady()){
 	  Double_t q = hitContainer[0].second.MomentumInGlobal().z();
-	  gEvDisp.DrawHypsTrackToLast(iStep, StepPoint, q);
+	  gEvDisp.DrawS2sTrackToLast(iStep, StepPoint, q);
 	}
 	return true;
       }
@@ -928,77 +926,17 @@ RK::MakeHPContainer()
   for(Int_t i=0; i<NumOfLayersSdcIn; ++i){
     container.push_back(std::make_pair(i+PlMinSdcIn, RKcalcHitPoint()));
   }
-  for(Int_t i=0; i<NumOfLayersVP; ++i){
+  for(Int_t i=0; i<NumOfLayersVP-1; ++i){
     container.push_back(std::make_pair(i+PlMinVP, RKcalcHitPoint()));
   }
   for(Int_t i=0; i<NumOfLayersSdcOut; ++i){
     container.push_back(std::make_pair(i+PlMinSdcOut, RKcalcHitPoint()));
   }
 
-  container.push_back(std::make_pair(IdTOF_X, RKcalcHitPoint()));
-  container.push_back(std::make_pair(IdTOF_Y, RKcalcHitPoint()));
-
-
-  return container;
-}
-
-RKHitPointContainer
-RK::MakeHPContainerL()
-{
-  static const auto& IdList = gGeom.GetDetectorIDList();
-  RKHitPointContainer container;
-  // for(auto& id: IdList){
-  //   if(id <= IdTOF_DY){
-  //     container.push_back(std::make_pair(id, RKcalcHitPoint()));
-  //   }
-  // }
-
-  // /*** From Upstream ***/
-  container.push_back(std::make_pair(IdTarget, RKcalcHitPoint()));
-
-  for(Int_t i=0; i<NumOfLayersSdcIn; ++i){
-    container.push_back(std::make_pair(i+PlMinSdcIn, RKcalcHitPoint()));
-  }
-  for(Int_t i=0; i<NumOfLayersVP; ++i){
-    container.push_back(std::make_pair(i+PlMinVP, RKcalcHitPoint()));
-  }
-  for(Int_t i=0; i<NumOfLayersSdcOut; ++i){
-    container.push_back(std::make_pair(i+PlMinSdcOut, RKcalcHitPoint()));
-  }
-
-  container.push_back(std::make_pair(IdLTOF_X_TL, RKcalcHitPoint()));
-  container.push_back(std::make_pair(IdLTOF_Y_TL, RKcalcHitPoint()));
-
-  return container;
-}
-
-RKHitPointContainer
-RK::MakeHPContainerR()
-{
-  static const auto& IdList = gGeom.GetDetectorIDList();
-  RKHitPointContainer container;
-  // for(auto& id: IdList){
-  //   if(id <= IdTOF_DY){
-  //     container.push_back(std::make_pair(id, RKcalcHitPoint()));
-  //   }
-  // }
-
-  // /*** From Upstream ***/
-  container.push_back(std::make_pair(IdTarget, RKcalcHitPoint()));
-
-  for(Int_t i=0; i<NumOfLayersSdcIn; ++i){
-    container.push_back(std::make_pair(i+PlMinSdcIn, RKcalcHitPoint()));
-  }
-  for(Int_t i=0; i<NumOfLayersVP; ++i){
-    container.push_back(std::make_pair(i+PlMinVP, RKcalcHitPoint()));
-  }
-  for(Int_t i=0; i<NumOfLayersSdcOut; ++i){
-    container.push_back(std::make_pair(i+PlMinSdcOut, RKcalcHitPoint()));
-  }
-
-  container.push_back(std::make_pair(IdLTOF_X_TR, RKcalcHitPoint()));
-  container.push_back(std::make_pair(IdLTOF_Y_TR, RKcalcHitPoint()));
-
+  container.push_back(std::make_pair(IdTOF_UX, RKcalcHitPoint()));
+  container.push_back(std::make_pair(IdTOF_UY, RKcalcHitPoint()));
+  container.push_back(std::make_pair(IdTOF_DX, RKcalcHitPoint()));
+  container.push_back(std::make_pair(IdTOF_DY, RKcalcHitPoint()));
 
   return container;
 }
