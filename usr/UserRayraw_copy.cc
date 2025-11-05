@@ -107,7 +107,7 @@ ProcessingNormal()
 
   HF1(1, 0);
 
-  // HodoPHCManのインスタンスを取得
+  //get  HodoPHCMan instance
   const auto& phcMan = HodoPHCMan::GetInstance();
 
     {
