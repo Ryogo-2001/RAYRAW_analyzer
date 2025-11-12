@@ -305,15 +305,15 @@ ProcessingNormal()
       
     
       for(Int_t m = 0; m<Npulse; ++m){
-        pulse_height = hit->GetPulseHeight(U, m); // <--- ★値を取得
-        pulse_time   = hit->GetPulseTime(U, m);   // <--- ★値を取得
+        pulse_height = hit->GetPulseHeight(U, m); 
+        pulse_time   = hit->GetPulseTime(U, m);   
         // de           = hit->DeltaE(m); 
         
         // chi2         = hit->GetChi2();
         // max_res      = hit->GetMaxRes(); 
 
-        HF1 (hid_pulse_height, pulse_height); // <--- ★ヒスト 202 をFill
-        HF1 (hid_pulse_time, pulse_time);     // <--- ★ヒスト 203 をFill
+        HF1 (hid_pulse_height, pulse_height); 
+        HF1 (hid_pulse_time, pulse_time);
         // HF1 (hid_pulse_de, de); 
         // HF2 (hid_chi2_res, max_res, chi2); 
         // HF2 (hid_chi2_ph, pulse_height, chi2); 
