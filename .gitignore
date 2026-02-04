@@ -14,5 +14,5 @@ lib
 macro
 fieldmap
 rootfile*
-bacup/
+backup/
 *.pdf
