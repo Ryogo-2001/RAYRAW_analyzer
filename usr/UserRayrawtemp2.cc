@@ -391,7 +391,7 @@ Bool_t ConfMan::InitializeHistograms()
     HB2(RAYRAWHid + (seg+1)*1000 + 205, w205, 200, 0.0, 250.0,500, 0.0, 2000.0); 
     HB1(RAYRAWHid + (seg+1)*1000 + 202, w202,NbinPulseTime,0,200);
     HB1(RAYRAWHid + (seg+1)*1000 + 203, w203, NbinPulseTime, MinPulseTime, MaxPulseTime);
-    HB2(RAYRAWHid + (seg+1)*1000 + 206, w206,200, -50, 60, 500, -0.5, 3);
+    HB2(RAYRAWHid + (seg+1)*1000 + 206, w206,440, -50, 60, 500, -0.5, 3);
   }
 
   // tree

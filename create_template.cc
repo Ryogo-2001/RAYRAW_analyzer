@@ -16,7 +16,7 @@
 const int NumOfSegRayraw = 32;
 const int RAYRAWHid = 100000;
 
-void create_template(const char* in_filename = "run1358WaveformTemp.root")
+void create_template(const char* in_filename = "run1358WaveformTempitalation.root")
 {
     gStyle->SetOptStat(0);
     gStyle->SetOptFit(1);
@@ -27,8 +27,8 @@ void create_template(const char* in_filename = "run1358WaveformTemp.root")
         return;
     }
 
-    gSystem->mkdir("param/NEW_RAYRAWTEMP", kTRUE);
-    std::cout << "Output directory 'param/NEW_RAYRAWTEMP/' is ready." << std::endl;
+    gSystem->mkdir("param/NEW_RAYRAWTEMP2", kTRUE);
+    std::cout << "Output directory 'param/NEW_RAYRAWTEMP2/' is ready." << std::endl;
 
     std::cout << "Generating PDF (rayraw_histograms.pdf)..." << std::endl;
     TCanvas *c_pdf = new TCanvas("c_pdf", "RAYRAW HWF Histograms", 1200, 1200);
@@ -79,7 +79,7 @@ void create_template(const char* in_filename = "run1358WaveformTemp.root")
     delete c_pdf;
     std::cout << "PDF generation complete." << std::endl;
 
-    std::cout << "Generating new template files in param/NEW_RAYRAWTEMP/ ..." << std::endl;
+    std::cout << "Generating new template files in param/NEW_RAYRAWTEMP2/ ..." << std::endl;
     TCanvas *c_template = new TCanvas("c_template", "Template Creation", 1200, 600);
     gStyle->SetOptStat(0);
 
@@ -112,9 +112,9 @@ void create_template(const char* in_filename = "run1358WaveformTemp.root")
         c_template->cd(2);
         h_template->Draw();
         
-        std::ofstream outfile(Form("param/NEW_RAYRAWTEMP/NEW_RAYRAWTEMP.%d", seg));
+        std::ofstream outfile(Form("param/NEW_RAYRAWTEMP2/NEW_RAYRAWTEMP2.%d", seg));
         if (!outfile.is_open()) {
-            std::cerr << "Error: Cannot write to param/NEW_RAYRAWTEMP/NEW_RAYRAWTEMP." << seg << std::endl;
+            std::cerr << "Error: Cannot write to param/NEW_RAYRAWTEMP2/NEW_RAYRAWTEMP2." << seg << std::endl;
             continue;
         }
 
