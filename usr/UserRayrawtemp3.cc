@@ -321,9 +321,7 @@ ProcessingNormal()
         HF1 (hid_pulse_time, pulse_time);
       }
 
-      // -----------------------------------------------------------------
-      // --- Fill Hist 206 (Template Waveform, simplified logic) ---
-      // -----------------------------------------------------------------
+      
       
       Bool_t flag = false;
 #if makeHWF
@@ -334,24 +332,22 @@ ProcessingNormal()
         flag = true;
 #endif
 
-      // 条件: 
-      // 1. Npulse == 1 (flag == true)
-      // 2. pulse_height > 40 (Npulse==1なので、pulse_height変数は↑のループでセットされた値を持つ)
+      
       if(flag && pulse_height > 40){
         
-        // RayrawWaveformHit が計算したフィット結果 (pulse_time, pulse_height) を信頼する
-        // 独自のピーク探索 (time, peak) やペデスタル計算 (pede) は行わない
+       
 
         for(Int_t m=0; m<NhitWF; m++){
           std::pair<Double_t, Double_t> waveform = hit->GetWaveform(U, m);
           
-          // アライメントには「フィット時間 (pulse_time)」を使用
-          // 規格化には「フィット高 (pulse_height)」を使用
+         
+          
           HF2 (hid_wf_temp, waveform.first - pulse_time, (waveform.second )/pulse_height);
         }
       }
       
-      // --- End of Hist 206 logic ---
+     
+      
 
       if (Npulse == 0) {
         for(Int_t m = 0; m<NhitWF; ++m){
@@ -448,7 +444,7 @@ ConfMan::InitializeHistograms()
     // TString title302 = Form("RAYRAW seg %d : chi2 vs max_res", seg); 
     // TString title303 = Form("RAYRAW seg %d : chi2 vs pulse height", seg);
 
-    // ヒストグラムのレンジ(X軸, Y軸)をUserRayrawtemp.ccの元の定義に戻しています
+    
     HB2( RAYRAWHid + (seg+1)*1000 + 201, title201, 200, -5, 60, 500, -20, 100);
     HB1( RAYRAWHid + (seg+1)*1000 + 202, title202, NbinPH, MinPH, MaxPH);
     HB1( RAYRAWHid + (seg+1)*1000 + 203, title203, NbinPulseTime, MinPulseTime, MaxPulseTime);
