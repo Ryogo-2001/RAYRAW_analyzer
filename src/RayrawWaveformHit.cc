@@ -483,10 +483,21 @@ void RayrawWaveformHit::Fit1(FitParam *fp)
 
   m_func -> SetNpx(1000);
   m_func -> SetParameters(&par[0]);
-  m_func -> FixParameter(0,par[0]); 
+  m_func -> FixParameter(0,par[0]);
   m_func -> SetLineColor(fp->color);
   for(Int_t nine= ParaNum; nine<ParaMax; nine++)
     m_func -> FixParameter(nine,0);
+
+  // The time parameters (and the pedestal, par[1]) start exactly at 0
+  // (PreSearch seeds the time from the peak sample, which is already
+  // centered at 0; the pedestal is seeded to 0 in SetFitParam). Without an
+  // explicit step size, Minuit derives its initial step from the parameter
+  // value itself, which is 0 here, so it never moves off its seed and the
+  // whole fit fails to converge. Give these a small non-zero step so the
+  // fit can actually run.
+  m_func -> SetParError(1, 1.0);
+  for(Int_t i=2; i<ParaNum; i+=2)
+    m_func -> SetParError(i, 0.05);
 
   m_TGraphC[fp->tgen] -> Fit(m_func,"qN","",fp->FitStart,fp->FitEnd);
 

@@ -1,0 +1,33 @@
+start:          Sun Oct 25 05:31:19 2026
+________________________________________________________________________________
+key:            1358
+________________________________________________________________________________
+bin:            ./bin/RayrawTemplateFit
+conf:           ./param/conf/analyzer_rayraw_run1358.conf
+data:           /gpfs/group/had/sks/Users/akao/RAYRAW/rayraw_bench/run01358.dat
+unit:           10000
+nevent:
+out:            /gpfs/group/had/sks/Users/akao/RAYRAW/root/templateFit
+nproc:          18
+buff_path:      /group/had/sks/Users/akao/buffer
+queue:          s
+qmerge:         a
+dirdummy:       /gpfs/home/had/ryogo/work/RAYRAW/k18-analyzer/dev/runmanager/tmp/tmpqt8ra0dg
+________________________________________________________________________________
+elem(0):        runlist_templateFit_0
+________________________________________________________________________________
+conf(0):        /gpfs/home/had/ryogo/work/RAYRAW/k18-analyzer/dev/runmanager/tmp/tmpqt8ra0dg/runlist_templateFit_0.conf
+unpack(0):      /gpfs/home/had/ryogo/work/RAYRAW/k18-analyzer/dev/runmanager/tmp/tmpqt8ra0dg/runlist_templateFit_0.xml
+________________________________________________________________________________
+out(0):         /gpfs/group/had/sks/Users/akao/RAYRAW/root/runlist_templateFit_0.root
+________________________________________________________________________________
+log(0):         /gpfs/home/had/ryogo/work/RAYRAW/k18-analyzer/dev/runmanager/log/runlist_templateFit_0.log
+mergelog:
+________________________________________________________________________________
+pid[bjob(0)]:   2981225
+________________________________________________________________________________
+jid[bjob(0)]:   30051052
+________________________________________________________________________________
+kill_bjob:      Process was killed [jid/pid: 30051052]
+________________________________________________________________________________
+end:            Sun Oct 25 06:08:53 2026
