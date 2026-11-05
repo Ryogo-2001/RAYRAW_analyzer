@@ -170,6 +170,12 @@ ConfMan::Finalize()
 TString
 ConfMan::FilePath(const TString& src) const
 {
+  // Already an absolute path (e.g. pre-resolved by runmanager): use as-is.
+  // Without this check, a value that is a path *prefix* rather than a
+  // complete existing filename (such as RAYRAWTEMP, which is suffixed
+  // per-segment at load time) would fail the ifstream probe below even
+  // when already absolute, and sConfDir would get wrongly prepended to it.
+  if(src.BeginsWith("/")) return src;
   std::ifstream tmp(src);
   if(tmp.good()) return src;
   else           return sConfDir + "/" + src;

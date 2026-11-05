@@ -10,9 +10,9 @@
         "data": "/gpfs/group/had/sks/Users/akao/RAYRAW/rayraw_bench/run01358.dat",
         "dstin": null,
         "root": "/gpfs/group/had/sks/Users/akao/RAYRAW/root/templateFit/run01358_RayrawTemplateFit.root",
-        "time": 249.15351700782776,
-        "stat": "BJOB-RUNNING",
+        "time": 3635.3257615566254,
+        "stat": "DONE",
         "nseg": 1,
-        "prog": 0
+        "prog": 1
     }
 }

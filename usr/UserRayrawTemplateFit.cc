@@ -66,6 +66,8 @@ struct Event
   std::vector<Double_t>              tdc_first_corr; // [seg]
   std::vector<Double_t>              dE;             // [seg]
   std::vector<Double_t>              dE_q;           // [seg]
+  std::vector<std::vector<Double_t>> pulse_time;     // [seg][pulse] (from template fit)
+  std::vector<std::vector<Double_t>> pulse_height;   // [seg][pulse] (from template fit)
 
   Int_t Npulse[NumOfSegRayraw];
 
@@ -88,6 +90,8 @@ Event::clear()
   tdc_first_corr.clear();
   dE.clear();
   dE_q.clear();
+  pulse_time.clear();
+  pulse_height.clear();
 
   for(Int_t i=0; i<NumOfSegRayraw; ++i) Npulse[i] = 0;
 }
@@ -243,6 +247,9 @@ ProcessingNormal()
     const auto& U = HodoRawHit::kUp;
     const Int_t nh = hodoAna.GetNHits("RAYRAW");
 
+    event.pulse_time.resize(NumOfSegRayraw);
+    event.pulse_height.resize(NumOfSegRayraw);
+
     for(Int_t i=0; i<nh; ++i){
       const auto& hit = hodoAna.GetHit<RayrawWaveformHit>("RAYRAW", i);
       if(!hit) continue;
@@ -275,6 +282,8 @@ ProcessingNormal()
         pulse_time   = hit->GetPulseTime(U, m);
         HF1(hid_pulse_height, pulse_height);
         HF1(hid_pulse_time, pulse_time);
+        event.pulse_time[seg].push_back(pulse_time);
+        event.pulse_height[seg].push_back(pulse_height);
       }
 
       bool useThis = false;
@@ -397,7 +406,7 @@ ConfMan::InitializeHistograms()
     HB2(RAYRAWHid + (seg+1)*1000 + 205, w205, 200, 0.0, 250.0, 500, 0.0, 2000.0);
     HB1(RAYRAWHid + (seg+1)*1000 + 202, w202, NbinPulseTime, 0, 200);
     HB1(RAYRAWHid + (seg+1)*1000 + 203, w203, NbinPulseTime, MinPulseTime, MaxPulseTime);
-    HB2(RAYRAWHid + (seg+1)*1000 + 206, w206, 200, -50, 60, 500, -0.5, 3);
+    HB2(RAYRAWHid + (seg+1)*1000 + 206, w206, 440, -50, 60, 500, -0.5, 3);
   }
 
   // tree
@@ -414,6 +423,8 @@ ConfMan::InitializeHistograms()
   tree->Branch("tdc_first_corr", &event.tdc_first_corr);
   tree->Branch("dE(MaxADC)",     &event.dE);
   tree->Branch("dE(Integral)",   &event.dE_q);
+  tree->Branch("pulse_time",     &event.pulse_time);
+  tree->Branch("pulse_height",   &event.pulse_height);
   tree->Branch("Npulse",         event.Npulse, Form("Npulse[%d]/I", NumOfSegRayraw));
 
   HPrint();
